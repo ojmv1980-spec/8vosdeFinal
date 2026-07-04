@@ -482,6 +482,13 @@
             background: #fbbf24;
             box-shadow: 0 0 20px #fbbf24;
         }
+        
+        /* Barra de navegación stadium */
+        .nav-stadium {
+            position: sticky;
+            top: 16px;
+            z-index: 50;
+        }
     </style>
 </head>
 <body class="relative">
@@ -673,6 +680,28 @@
                  VISTA 5: PANTALLA PRINCIPAL (STADIUM)
                  ============================================ -->
             <div id="vista-stadium" class="vista max-w-6xl mx-auto mt-8">
+                
+                <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+                <div class="glass-strong p-4 mb-6 flex items-center justify-between nav-stadium">
+                    <button 
+                        id="btn-salir-stadium" 
+                        class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                    >
+                        🚪 SALIR
+                    </button>
+                    
+                    <h2 class="font-titulo text-lg md:text-xl titulo-gradient hidden sm:block">
+                        🏆 8VOS DE FINAL
+                    </h2>
+                    
+                    <button 
+                        id="btn-admin-stadium" 
+                        class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                    >
+                        🔐 ADMIN
+                    </button>
+                </div>
+                
                 <!-- Input para nuevo usuario -->
                 <div class="glass-strong p-6 mb-6">
                     <div class="flex flex-col md:flex-row gap-4 items-center">
@@ -1601,18 +1630,35 @@
                     const bloqueDiv = document.createElement('div');
                     bloqueDiv.className = 'glass p-4';
                     
+                    // Construir HTML con preguntas visibles debajo del título
                     let tablaHTML = `
-                        <h4 class="font-semibold text-yellow-400 mb-3">
-                            BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
-                        </h4>
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-yellow-400 mb-2 text-lg">
+                                BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
+                            </h4>
+                            <!-- PREGUNTAS COMPLETAS EN TEXTO PEQUEÑO -->
+                            <div class="space-y-1 mb-3 pl-2 border-l-2 border-fucsia/30">
+                                ${partido.preguntas.map((p, i) => `
+                                    <p class="text-xs text-white/60 font-medium">
+                                        <span class="text-fucsia font-bold">P${i + 1}:</span> ${p.texto}
+                                    </p>
+                                `).join('')}
+                            </div>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="tabla-glass text-sm">
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th>P1</th>
-                                        <th>P2</th>
-                                        <th>P3</th>
+                                        <th title="${partido.preguntas[0].texto}" class="cursor-help">
+                                            P1 <span class="text-white/40 text-xs">ⓘ</span>
+                                        </th>
+                                        <th title="${partido.preguntas[1].texto}" class="cursor-help">
+                                            P2 <span class="text-white/40 text-xs">ⓘ</span>
+                                        </th>
+                                        <th title="${partido.preguntas[2].texto}" class="cursor-help">
+                                            P3 <span class="text-white/40 text-xs">ⓘ</span>
+                                        </th>
                                         ${hayResultados ? '<th>Pts</th>' : ''}
                                     </tr>
                                 </thead>
@@ -1629,21 +1675,24 @@
                         partido.preguntas.forEach(pregunta => {
                             const respuesta = respuestas[pregunta.id] || '—';
                             let clase = '';
+                            let icono = '';
                             
                             if (hayResultados && respuesta !== '—') {
                                 const correcta = resultados[pregunta.id];
                                 if (respuesta === correcta) {
                                     clase = 'chip-success';
+                                    icono = '✔️';
                                     puntos++;
                                 } else {
                                     clase = 'chip-danger';
+                                    icono = '❌';
                                 }
                             }
                             
                             tablaHTML += `
                                 <td>
                                     <span class="chip ${clase}">
-                                        ${respuesta} ${clase ? (respuesta === correcta ? '✔️' : '❌') : ''}
+                                        ${respuesta} ${icono}
                                     </span>
                                 </td>
                             `;
@@ -1706,6 +1755,27 @@
         document.getElementById('btn-salir-admin').addEventListener('click', () => {
             estado.modoAdmin = false;
             mostrarVista('vista-registro');
+        });
+        
+        // ============================================
+        // BOTONES DE NAVEGACIÓN EN STADIUM
+        // ============================================
+        document.getElementById('btn-salir-stadium').addEventListener('click', () => {
+            // Limpiar estado del usuario actual
+            estado.usuarioActual = null;
+            localStorage.removeItem('usuarioActual');
+            
+            // Limpiar inputs
+            document.getElementById('input-nombre').value = '';
+            document.getElementById('input-nombre-stadium').value = '';
+            
+            // Volver a la pantalla de registro
+            mostrarVista('vista-registro');
+            mostrarToast('Sesión cerrada', 'info');
+        });
+        
+        document.getElementById('btn-admin-stadium').addEventListener('click', () => {
+            mostrarVista('vista-admin-login');
         });
         
         // ============================================
