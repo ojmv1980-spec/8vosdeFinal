@@ -1116,21 +1116,28 @@
         
         // Función para cerrar jugadas automáticamente
         async function cerrarJugadasAutomaticamente() {
-            try {
-                const configDoc = await getDoc(doc(db, 'config', 'global'));
-                const config = configDoc.data();
-                
-                // Solo cerrar si está ABIERTO
-                if (config.estadoApp === 'ABIERTO') {
-                    await updateDoc(doc(db, 'config', 'global'), {
-                        estadoApp: 'CERRADO'
-                    });
-                    mostrarToast(' Las jugadas se han cerrado automáticamente', 'info');
-                }
-            } catch (error) {
-                console.error('Error al cerrar automáticamente:', error);
-            }
+    try {
+        console.log('⏰ Intentando cierre automático...');
+        
+        const configDoc = await getDoc(doc(db, 'config', 'global'));
+        const config = configDoc.data();
+        
+        console.log('📊 Estado actual:', config.estadoApp);
+        
+        // Solo cerrar si está ABIERTO
+        if (config.estadoApp === 'ABIERTO') {
+            await updateDoc(doc(db, 'config', 'global'), {
+                estadoApp: 'CERRADO'
+            });
+            console.log('✅ Jugadas cerradas automáticamente');
+            mostrarToast('🕐 Las jugadas se han cerrado automáticamente', 'info');
+        } else {
+            console.log('⚠️ Ya estaban cerradas');
         }
+    } catch (error) {
+        console.error('❌ Error al cerrar automáticamente:', error);
+    }
+}
         
         setInterval(actualizarTemporizador, 1000);
         actualizarTemporizador();
@@ -1545,39 +1552,52 @@
         // CARGAR STADIUM (PANTALLA PRINCIPAL) - MEJORADO
         // ============================================
         async function cargarStadium() {
-            try {
-                // Verificar estado de la app
-                const configDoc = await getDoc(doc(db, 'config', 'global'));
-                const config = configDoc.data();
-                const estadoApp = config.estadoApp;
-                
-                // Ocultar/mostrar input según estado
-                const inputContainer = document.getElementById('stadium-input-container');
-                if (inputContainer) {
-                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
-                        inputContainer.classList.add('hidden');
-                    } else {
-                        inputContainer.classList.remove('hidden');
-                    }
-                }
-                
-                // Cargar ranking
-                await cargarRanking();
-                
-                // Cargar jugadas por bloque
-                await cargarJugadasPorBloque();
-                
-                // Mostrar mensaje si está cerrado
-                if (estadoApp === 'CERRADO') {
-                    mostrarToast('Jugadas cerradas - Esperando resultados', 'info');
-                }
-                
-            } catch (error) {
-                console.error('Error cargando stadium:', error);
-                mostrarToast('Error al cargar datos', 'danger');
+    try {
+        console.log('🔄 Cargando stadium...');
+        
+        // Verificar estado de la app
+        const configDoc = await getDoc(doc(db, 'config', 'global'));
+        const config = configDoc.data();
+        const estadoApp = config.estadoApp;
+        
+        console.log('📊 Estado actual:', estadoApp);
+        
+        // Ocultar/mostrar input según estado
+        const inputContainer = document.getElementById('stadium-input-container');
+        if (inputContainer) {
+            if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                inputContainer.classList.add('hidden');
+                console.log('✅ Input oculto (estado CERRADO/FINALIZADO)');
+            } else {
+                inputContainer.classList.remove('hidden');
+                console.log('✅ Input visible (estado ABIERTO)');
             }
         }
         
+        // Forzar recarga del ranking
+        document.getElementById('ranking-container').classList.add('hidden');
+        document.getElementById('bloques-jugadas').innerHTML = '';
+        
+        // Cargar ranking
+        await cargarRanking();
+        
+        // Cargar jugadas por bloque
+        await cargarJugadasPorBloque();
+        
+        // Mostrar mensaje si está cerrado
+        if (estadoApp === 'CERRADO') {
+            mostrarToast('🕐 Jugadas cerradas - Esperando resultados', 'info');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error cargando stadium:', error);
+        mostrarToast('Error al cargar datos', 'danger');
+    }
+}
+        
+		
+		
+		
         // ============================================
         // CARGAR RANKING - MEJORADO CON MANEJO DE ERRORES
         // ============================================
@@ -1626,21 +1646,21 @@
                 rankingBody.innerHTML = '';
                 
                 participantes.forEach((p, index) => {
-                    const posicion = index + 1;
-                    let emoji = '';
-                    if (posicion === 1) emoji = '🥇';
-                    else if (posicion === 2) emoji = '';
-                    else if (posicion === 3) emoji = '🥉';
-                    else emoji = `${posicion}°`;
-                    
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="font-numero text-xl">${emoji}</td>
-                        <td class="font-nombre">${p.nombre}</td>
-                        <td class="font-numero text-xl text-yellow-400">${p.puntajeTotal}</td>
-                    `;
-                    rankingBody.appendChild(row);
-                });
+					const posicion = index + 1;
+					let emoji = '';
+					if (posicion === 1) emoji = '🥇';
+					else if (posicion === 2) emoji = '🥈';  // ESTE ESTABA VACÍO
+					else if (posicion === 3) emoji = '🥉';
+					else emoji = `${posicion}°`;
+    
+					const row = document.createElement('tr');
+					row.innerHTML = `
+						<td class="font-numero text-xl">${emoji}</td>
+						<td class="font-nombre">${p.nombre}</td>
+						<td class="font-numero text-xl text-yellow-400">${p.puntajeTotal}</td>
+					`;
+					rankingBody.appendChild(row);
+				});
                 
             } catch (error) {
                 console.error('Error cargando ranking:', error);
@@ -1739,30 +1759,30 @@
                             <td class="font-nombre">${p.nombre}</td>`;
                         
                         partido.preguntas.forEach(pregunta => {
-                            const respuesta = respuestas[pregunta.id] || '—';
-                            let clase = '';
-                            let icono = '';
-                            
-                            if (hayResultados && respuesta !== '—') {
-                                const correcta = resultados[pregunta.id];
-                                if (respuesta === correcta) {
-                                    clase = 'chip-success';
-                                    icono = '✔️';
-                                    puntos++;
-                                } else {
-                                    clase = 'chip-danger';
-                                    icono = '❌';
-                                }
-                            }
-                            
-                            tablaHTML += `
-                                <td>
-                                    <span class="chip ${clase}">
-                                        ${respuesta} ${icono}
-                                    </span>
-                                </td>
-                            `;
-                        });
+    const respuesta = respuestas[pregunta.id] || '—';
+    let clase = '';
+    let icono = '';
+    
+    if (hayResultados && respuesta !== '—') {
+        const correcta = resultados[pregunta.id];
+        if (respuesta === correcta) {
+            clase = 'chip-success';
+            icono = '✔️';  // ESTE PODRÍA ESTAR CORROMPIDO
+            puntos++;
+        } else {
+            clase = 'chip-danger';
+            icono = '❌';  // ESTE PODRÍA ESTAR CORROMPIDO
+        }
+    }
+    
+    tablaHTML += `
+        <td>
+            <span class="chip ${clase}">
+                ${respuesta} ${icono}
+            </span>
+        </td>
+    `;
+});
                         
                         if (hayResultados) {
                             tablaHTML += `<td class="font-numero text-yellow-400">${puntos}</td>`;
@@ -1820,9 +1840,11 @@
         });
         
         document.getElementById('btn-salir-admin').addEventListener('click', () => {
-            estado.modoAdmin = false;
-            mostrarVista('vista-registro');
-        });
+			estado.modoAdmin = false;
+			// CAMBIAR: Ir al stadium en lugar del registro
+			cargarStadium();
+			mostrarVista('vista-stadium');
+		});
         
         // ============================================
         // BOTONES DE NAVEGACIÓN EN STADIUM
@@ -2251,24 +2273,32 @@
         // LISTENER EN TIEMPO REAL PARA CAMBIOS DE ESTADO
         // ============================================
         onSnapshot(doc(db, 'config', 'global'), (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                const estadoApp = data.estadoApp;
+    console.log('📡 Cambio detectado en config');
+    
+    if (docSnap.exists()) {
+        const data = docSnap.data();
+        const estadoApp = data.estadoApp;
+        
+        console.log('🔄 Nuevo estado:', estadoApp);
+        
+        // Si estamos en la vista stadium, recargar
+        if (document.getElementById('vista-stadium').classList.contains('activa')) {
+            console.log('📍 Recargando stadium...');
+            cargarStadi…ById('temporizador').classList.add('text-red-400');
                 
-                // Si estamos en la vista stadium, recargar
-                if (document.getElementById('vista-stadium').classList.contains('activa')) {
-                    cargarStadium();
-                }
+                // Deshabilitar input
+                document.getElementById('input-nombre').disabled = true;
+                document.getElementById('btn-participar').disabled = true;
+                document.getElementById('btn-participar').classList.add('opacity-50');
                 
-                // Si estamos en la vista registro y el estado cambió a CERRADO, actualizar temporizador
-                if (document.getElementById('vista-registro').classList.contains('activa')) {
-                    if (estadoApp === 'CERRADO') {
-                        document.getElementById('temporizador').textContent = 'CERRADO';
-                        document.getElementById('temporizador').classList.add('text-red-400');
-                    }
-                }
+                // Mostrar mensaje
+                mostrarToast('🚫 Las jugadas están cerradas', 'danger');
             }
-        });
+        }
+    }
+});
+		
+		
         
         // ============================================
         // PERSISTENCIA DE SESIÓN
@@ -2300,6 +2330,26 @@
                         }
                     }
                 });
+            }
+        });
+		
+		        // ============================================
+        // DEBUG AL CARGAR LA PÁGINA
+        // ============================================
+        window.addEventListener('load', async () => {
+            console.log('🚀 App cargada');
+            
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                if (configDoc.exists()) {
+                    console.log('📊 Configuración:', configDoc.data());
+                }
+                
+                const participantesCount = (await getDocs(collection(db, 'participantes'))).size;
+                console.log(` Participantes: ${participantesCount}`);
+                
+            } catch (error) {
+                console.error('❌ Error en debug:', error);
             }
         });
         
