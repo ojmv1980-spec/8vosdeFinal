@@ -5,21 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>8VOS DE FINAL - Mundial 2026</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- html2canvas para generar imágenes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* ============================================
-           SISTEMA DE DISEÑO - 8VOS DE FINAL
-           Basado en Macuare BDR
-           ============================================ */
-        
         :root {
             --azul-marino: #0a1931;
             --azul-claro: #152642;
@@ -35,9 +25,7 @@
             --blanco: #ffffff;
         }
         
-        * {
-            font-family: 'Montserrat', sans-serif;
-        }
+        * { font-family: 'Montserrat', sans-serif; }
         
         body {
             background: linear-gradient(135deg, #0a1931 0%, #152642 50%, #6a1b9a 100%);
@@ -47,14 +35,11 @@
             overflow-x: hidden;
         }
         
-        /* Fondo animado */
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle at 20% 50%, rgba(217, 70, 239, 0.1) 0%, transparent 50%),
                         radial-gradient(circle at 80% 80%, rgba(106, 27, 154, 0.1) 0%, transparent 50%);
             animation: fondoAnimado 20s ease-in-out infinite;
@@ -67,22 +52,9 @@
             50% { transform: translate(-20px, -20px); }
         }
         
-        /* Tipografía */
-        .font-titulo {
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900;
-        }
-        
-        .font-numero {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 800;
-        }
-        
-        .font-nombre {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-        }
-        
+        .font-titulo { font-family: 'Orbitron', sans-serif; font-weight: 900; }
+        .font-numero { font-family: 'Montserrat', sans-serif; font-weight: 800; }
+        .font-nombre { font-family: 'Montserrat', sans-serif; font-weight: 700; }
         .font-etiqueta {
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
@@ -90,7 +62,6 @@
             letter-spacing: 0.05em;
         }
         
-        /* Glassmorphism */
         .glass {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(16px);
@@ -107,16 +78,10 @@
             border-radius: 16px;
         }
         
-        /* Gradientes */
-        .bg-app {
-            background: linear-gradient(135deg, #0a1931 0%, #152642 50%, #6a1b9a 100%);
-        }
-        
         .btn-primary {
             background: linear-gradient(135deg, #d946ef 0%, #6a1b9a 100%);
             transition: all 0.3s ease;
         }
-        
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(217, 70, 239, 0.4);
@@ -126,7 +91,6 @@
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             transition: all 0.3s ease;
         }
-        
         .btn-success:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
@@ -136,7 +100,6 @@
             background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             transition: all 0.3s ease;
         }
-        
         .btn-danger:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(239, 68, 68, 0.4);
@@ -147,10 +110,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
         }
-        
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
         
         .titulo-gradient {
             background: linear-gradient(135deg, #d946ef 0%, #e879f9 50%, #fbbf24 100%);
@@ -159,27 +119,9 @@
             background-clip: text;
         }
         
-        /* Animaciones */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @keyframes scaleIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        
-        @keyframes slideDown {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        
-        @keyframes latido {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
         @keyframes rebotar {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-10px); }
@@ -188,10 +130,8 @@
         .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
         .animate-scaleIn { animation: scaleIn 0.3s ease-out; }
         .animate-slideDown { animation: slideDown 0.4s ease-out; }
-        .animate-latido { animation: latido 1s ease-in-out infinite; }
         .animate-rebotar { animation: rebotar 0.6s ease-in-out; }
         
-        /* Inputs */
         .input-custom {
             background: rgba(255, 255, 255, 0.05);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -202,19 +142,18 @@
             transition: all 0.3s ease;
             width: 100%;
         }
-        
         .input-custom:focus {
             outline: none;
             border-color: #d946ef;
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 20px rgba(217, 70, 239, 0.3);
         }
-        
-        .input-custom::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+        .input-custom::placeholder { color: rgba(255, 255, 255, 0.4); }
+        .input-custom:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
         
-        /* Radio buttons personalizados */
         .radio-custom {
             display: inline-flex;
             align-items: center;
@@ -226,23 +165,17 @@
             transition: all 0.3s ease;
             font-weight: 600;
         }
-        
         .radio-custom:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(217, 70, 239, 0.5);
         }
-        
-        .radio-custom input[type="radio"] {
-            display: none;
-        }
-        
+        .radio-custom input[type="radio"] { display: none; }
         .radio-custom.selected {
             background: linear-gradient(135deg, rgba(217, 70, 239, 0.3) 0%, rgba(106, 27, 154, 0.3) 100%);
             border-color: #d946ef;
             box-shadow: 0 0 20px rgba(217, 70, 239, 0.4);
         }
         
-        /* Chips y Badges */
         .chip {
             display: inline-flex;
             align-items: center;
@@ -252,51 +185,23 @@
             font-size: 12px;
             font-weight: 700;
         }
-        
         .chip-success {
             background: rgba(16, 185, 129, 0.2);
             color: #10b981;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-        
         .chip-danger {
             background: rgba(239, 68, 68, 0.2);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        
-        .badge-success {
-            background: rgba(16, 185, 129, 0.2);
-            color: #10b981;
-        }
-        
-        .badge-warning {
-            background: rgba(251, 191, 36, 0.2);
-            color: #fbbf24;
-        }
-        
-        .badge-danger {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-        
-        /* Barra de progreso */
         .progress-bar {
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             overflow: hidden;
         }
-        
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #10b981 0%, #fbbf24 100%);
@@ -304,13 +209,11 @@
             border-radius: 10px;
         }
         
-        /* Tablas */
         .tabla-glass {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
         }
-        
         .tabla-glass th {
             background: rgba(255, 255, 255, 0.1);
             padding: 12px;
@@ -320,23 +223,16 @@
             font-size: 12px;
             letter-spacing: 0.05em;
         }
-        
         .tabla-glass td {
             padding: 12px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
+        .tabla-glass tr:hover td { background: rgba(255, 255, 255, 0.05); }
         
-        .tabla-glass tr:hover td {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        /* Modal */
         .modal-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             display: flex;
@@ -345,7 +241,6 @@
             z-index: 1000;
             animation: fadeIn 0.3s ease;
         }
-        
         .modal-content {
             background: rgba(21, 38, 66, 0.95);
             backdrop-filter: blur(20px);
@@ -357,7 +252,6 @@
             animation: scaleIn 0.3s ease;
         }
         
-        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -369,48 +263,18 @@
             animation: slideDown 0.4s ease;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
+        .toast-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .toast-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .toast-info { background: linear-gradient(135deg, #d946ef 0%, #6a1b9a 100%); }
         
-        .toast-success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
+        .vista { display: none; }
+        .vista.activa { display: block; animation: fadeIn 0.5s ease; }
         
-        .toast-danger {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); }
+        ::-webkit-scrollbar-thumb { background: rgba(217, 70, 239, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(217, 70, 239, 0.7); }
         
-        .toast-info {
-            background: linear-gradient(135deg, #d946ef 0%, #6a1b9a 100%);
-        }
-        
-        /* Vista oculta */
-        .vista {
-            display: none;
-        }
-        
-        .vista.activa {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        /* Scrollbar personalizado */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: rgba(217, 70, 239, 0.5);
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(217, 70, 239, 0.7);
-        }
-        
-        /* Tarjeta de imagen para descargar */
         .tarjeta-jugador {
             background: linear-gradient(135deg, #0a1931 0%, #152642 50%, #6a1b9a 100%);
             border: 2px solid rgba(217, 70, 239, 0.5);
@@ -420,7 +284,6 @@
             max-width: 600px;
             margin: 0 auto;
         }
-        
         .tarjeta-jugador h2 {
             font-family: 'Orbitron', sans-serif;
             font-weight: 900;
@@ -430,7 +293,6 @@
             background-clip: text;
         }
         
-        /* Pestañas admin */
         .tab-btn {
             padding: 12px 24px;
             background: rgba(255, 255, 255, 0.05);
@@ -443,23 +305,14 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-        
         .tab-btn.active {
             background: linear-gradient(135deg, #d946ef 0%, #6a1b9a 100%);
             border-color: #d946ef;
             box-shadow: 0 0 20px rgba(217, 70, 239, 0.4);
         }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
         
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
-        }
-        
-        /* Semáforo de estado */
         .semaforo {
             display: inline-block;
             width: 20px;
@@ -467,61 +320,52 @@
             border-radius: 50%;
             margin-right: 8px;
         }
+        .semaforo-verde { background: #10b981; box-shadow: 0 0 20px #10b981; }
+        .semaforo-rojo { background: #ef4444; box-shadow: 0 0 20px #ef4444; }
+        .semaforo-amarillo { background: #fbbf24; box-shadow: 0 0 20px #fbbf24; }
         
-        .semaforo-verde {
-            background: #10b981;
-            box-shadow: 0 0 20px #10b981;
-        }
-        
-        .semaforo-rojo {
-            background: #ef4444;
-            box-shadow: 0 0 20px #ef4444;
-        }
-        
-        .semaforo-amarillo {
-            background: #fbbf24;
-            box-shadow: 0 0 20px #fbbf24;
-        }
-        
-        /* Barra de navegación stadium */
         .nav-stadium {
             position: sticky;
             top: 16px;
             z-index: 50;
         }
+        
+        .mensaje-cerrado {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            color: #ef4444;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="relative">
     
-    <!-- ============================================
-         CONTENEDOR PRINCIPAL
-         ============================================ -->
     <div id="app" class="relative z-10 min-h-screen p-4 md:p-8">
         
-        <!-- ============================================
-             VISTA 1: REGISTRO INICIAL
-             ============================================ -->
-            <div id="vista-registro" class="vista activa max-w-md mx-auto mt-20">
-                <div class="glass-strong p-8 text-center">
-                    <h1 class="font-titulo text-4xl md:text-5xl titulo-gradient mb-4">
-                        8VOS DE FINAL
-                    </h1>
-                    <p class="text-white/70 mb-8 font-semibold">
-                        Mundial 2026 • Sistema de Pronósticos
+        <!-- VISTA 1: REGISTRO INICIAL -->
+        <div id="vista-registro" class="vista activa max-w-md mx-auto mt-20">
+            <div class="glass-strong p-8 text-center">
+                <h1 class="font-titulo text-4xl md:text-5xl titulo-gradient mb-4">
+                    8VOS DE FINAL
+                </h1>
+                <p class="text-white/70 mb-8 font-semibold">
+                    Mundial 2026 - Sistema de Pronosticos
+                </p>
+                
+                <div id="temporizador-container" class="glass p-4 mb-6">
+                    <p class="text-xs text-white/60 font-etiqueta mb-2">Primer partido inicia en:</p>
+                    <p id="temporizador" class="font-titulo text-3xl text-yellow-400">
+                        --:--:--
                     </p>
-                    
-                    <!-- Temporizador -->
-                    <div id="temporizador-container" class="glass p-4 mb-6">
-                        <p class="text-xs text-white/60 font-etiqueta mb-2">Primer partido inicia en:</p>
-                        <p id="temporizador" class="font-titulo text-3xl text-yellow-400">
-                            --:--:--
-                        </p>
-                    </div>
-                    
-                    <!-- Input de nombre -->
+                </div>
+                
+                <div id="registro-form-container" class="mb-6">
                     <div class="mb-6">
                         <label class="block text-left text-sm font-semibold text-white/80 mb-2">
-                            👤 Tu nombre de participación
+                            Tu nombre de participacion
                         </label>
                         <input 
                             type="text" 
@@ -533,372 +377,302 @@
                         >
                     </div>
                     
-                    <!-- Mensaje de sugerencia (oculto por defecto) -->
                     <div id="mensaje-sugerencia" class="hidden glass p-4 mb-6 animate-slideDown">
                         <p class="text-sm text-yellow-400 font-semibold mb-2">
-                            ⚠️ Este nombre ya está participando.
+                            Este nombre ya esta participando.
                         </p>
                         <p class="text-xs text-white/70 mb-3">
                             Puedes usar una de estas opciones:
                         </p>
-                        <div id="sugerencias-nombres" class="flex flex-wrap gap-2">
-                            <!-- Se llena dinámicamente -->
-                        </div>
+                        <div id="sugerencias-nombres" class="flex flex-wrap gap-2"></div>
                     </div>
                     
-                    <!-- Botón participar -->
                     <button 
                         id="btn-participar" 
                         class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
                     >
-                        🎯 PARTICIPAR
-                    </button>
-                    
-                    <!-- Link admin (discreto) -->
-                    <button 
-                        id="btn-admin-link" 
-                        class="mt-6 text-xs text-white/30 hover:text-white/60 transition-colors"
-                    >
-                        admin
+                        PARTICIPAR
                     </button>
                 </div>
+                
+                <div id="registro-cerrado-msg" class="hidden mensaje-cerrado mb-6">
+                    Las jugadas estan cerradas. Espera los resultados.
+                </div>
+                
+                <button 
+                    id="btn-admin-link" 
+                    class="mt-6 text-xs text-white/30 hover:text-white/60 transition-colors"
+                >
+                    admin
+                </button>
             </div>
-            
-            <!-- ============================================
-                 VISTA 2: INSTRUCCIONES
-                 ============================================ -->
-            <div id="vista-instrucciones" class="vista max-w-md mx-auto mt-20">
-                <div class="glass-strong p-8 text-center">
-                    <div class="text-6xl mb-4">️</div>
-                    <h2 class="font-titulo text-2xl titulo-gradient mb-6">
-                        IMPORTANTE
+        </div>
+        
+        <!-- VISTA 2: INSTRUCCIONES -->
+        <div id="vista-instrucciones" class="vista max-w-md mx-auto mt-20">
+            <div class="glass-strong p-8 text-center">
+                <div class="text-6xl mb-4">!</div>
+                <h2 class="font-titulo text-2xl titulo-gradient mb-6">
+                    IMPORTANTE
+                </h2>
+                <div class="glass p-6 mb-6 text-left">
+                    <p class="text-white/90 mb-4 font-semibold">
+                        Una vez guardado cada bloque, <span class="text-red-400">NO podras modificar tus respuestas</span>.
+                    </p>
+                    <p class="text-white/70 text-sm">
+                        Asegurate de elegir bien antes de confirmar. Cada acierto vale 1 punto.
+                    </p>
+                </div>
+                <button 
+                    id="btn-empezar" 
+                    class="btn-success w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
+                >
+                    ENTENDIDO, EMPEZAR
+                </button>
+            </div>
+        </div>
+        
+        <!-- VISTA 3: BLOQUE DE PARTIDO -->
+        <div id="vista-bloque" class="vista max-w-2xl mx-auto mt-8">
+            <div class="glass-strong p-6 md:p-8">
+                <div class="text-center mb-6">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <span class="chip bg-white/10">
+                            BLOQUE <span id="bloque-numero" class="font-numero text-yellow-400 ml-1">1</span> DE 8
+                        </span>
+                    </div>
+                    <h2 id="bloque-partido" class="font-titulo text-2xl md:text-3xl titulo-gradient mb-2">
+                        CANADA vs MARRUECOS
                     </h2>
-                    <div class="glass p-6 mb-6 text-left">
-                        <p class="text-white/90 mb-4 font-semibold">
-                            Una vez guardado cada bloque, <span class="text-red-400">NO podrás modificar tus respuestas</span>.
-                        </p>
-                        <p class="text-white/70 text-sm">
-                            Asegúrate de elegir bien antes de confirmar. Cada acierto vale 1 punto.
-                        </p>
-                    </div>
-                    <button 
-                        id="btn-empezar" 
-                        class="btn-success w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
-                    >
-                        ✅ ENTENDIDO, EMPEZAR
-                    </button>
-                </div>
-            </div>
-            
-            <!-- ============================================
-                 VISTA 3: BLOQUE DE PARTIDO
-                 ============================================ -->
-            <div id="vista-bloque" class="vista max-w-2xl mx-auto mt-8">
-                <div class="glass-strong p-6 md:p-8">
-                    <!-- Encabezado del bloque -->
-                    <div class="text-center mb-6">
-                        <div class="flex items-center justify-center gap-2 mb-2">
-                            <span class="chip bg-white/10">
-                                BLOQUE <span id="bloque-numero" class="font-numero text-yellow-400 ml-1">1</span> DE 8
-                            </span>
-                        </div>
-                        <h2 id="bloque-partido" class="font-titulo text-2xl md:text-3xl titulo-gradient mb-2">
-                            CANADÁ vs MARRUECOS
-                        </h2>
-                        <p id="bloque-fecha" class="text-sm text-white/60 font-semibold">
-                            Sáb 04/07, 1:00 PM
-                        </p>
-                    </div>
-                    
-                    <!-- Barra de progreso -->
-                    <div class="progress-bar mb-8">
-                        <div id="progreso-fill" class="progress-fill" style="width: 12.5%"></div>
-                    </div>
-                    
-                    <!-- Preguntas -->
-                    <div id="preguntas-container" class="space-y-6 mb-8">
-                        <!-- Se llena dinámicamente -->
-                    </div>
-                    
-                    <!-- Botón guardar -->
-                    <button 
-                        id="btn-guardar-bloque" 
-                        class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled
-                    >
-                        💾 GUARDAR SELECCIONES
-                    </button>
-                </div>
-            </div>
-            
-            <!-- ============================================
-                 VISTA 4: RESUMEN FINAL + IMAGEN
-                 ============================================ -->
-            <div id="vista-resumen" class="vista max-w-2xl mx-auto mt-8">
-                <div class="glass-strong p-6 md:p-8 mb-6">
-                    <div class="text-center mb-6">
-                        <div class="text-6xl mb-4 animate-rebotar"></div>
-                        <h2 class="font-titulo text-3xl titulo-gradient mb-2">
-                            ¡PARTICIPACIÓN COMPLETA!
-                        </h2>
-                        <p class="text-white/70 font-semibold">
-                            👤 <span id="resumen-nombre" class="text-yellow-400">JUAN</span>
-                        </p>
-                    </div>
-                    
-                    <!-- Resumen de selecciones -->
-                    <div id="resumen-selecciones" class="space-y-4 mb-8">
-                        <!-- Se llena dinámicamente -->
-                    </div>
-                    
-                    <!-- Botones de acción -->
-                    <div class="space-y-4">
-                        <button 
-                            id="btn-descargar-jpg" 
-                            class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
-                        >
-                            📥 DESCARGAR MI TARJETA JPG
-                        </button>
-                        <button 
-                            id="btn-volver-inicio" 
-                            class="btn-secondary w-full py-4 rounded-xl font-titulo text-lg text-white"
-                        >
-                            🏠 VOLVER AL INICIO
-                        </button>
-                    </div>
+                    <p id="bloque-fecha" class="text-sm text-white/60 font-semibold">
+                        Sab 04/07, 1:00 PM
+                    </p>
                 </div>
                 
-                <!-- Tarjeta oculta para generar imagen -->
-                <div id="tarjeta-oculta" class="hidden">
-                    <div id="tarjeta-jugador" class="tarjeta-jugador">
-                        <!-- Se llena dinámicamente -->
-                    </div>
+                <div class="progress-bar mb-8">
+                    <div id="progreso-fill" class="progress-fill" style="width: 12.5%"></div>
                 </div>
-            </div>
-            
-            <!-- ============================================
-                 VISTA 5: PANTALLA PRINCIPAL (STADIUM)
-                 ============================================ -->
-            <div id="vista-stadium" class="vista max-w-6xl mx-auto mt-8">
                 
-                <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
-                <div class="glass-strong p-4 mb-6 flex items-center justify-between nav-stadium">
-                    <button 
-                        id="btn-salir-stadium" 
-                        class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
-                    >
-                        🚪 SALIR
-                    </button>
-                    
-                    <h2 class="font-titulo text-lg md:text-xl titulo-gradient hidden sm:block">
-                        🏆 8VOS DE FINAL
+                <div id="preguntas-container" class="space-y-6 mb-8"></div>
+                
+                <button 
+                    id="btn-guardar-bloque" 
+                    class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled
+                >
+                    GUARDAR SELECCIONES
+                </button>
+            </div>
+        </div>
+        
+        <!-- VISTA 4: RESUMEN FINAL -->
+        <div id="vista-resumen" class="vista max-w-2xl mx-auto mt-8">
+            <div class="glass-strong p-6 md:p-8 mb-6">
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4 animate-rebotar">!</div>
+                    <h2 class="font-titulo text-3xl titulo-gradient mb-2">
+                        PARTICIPACION COMPLETA!
                     </h2>
-                    
+                    <p class="text-white/70 font-semibold">
+                        <span id="resumen-nombre" class="text-yellow-400">JUAN</span>
+                    </p>
+                </div>
+                
+                <div id="resumen-selecciones" class="space-y-4 mb-8"></div>
+                
+                <div class="space-y-4">
                     <button 
-                        id="btn-admin-stadium" 
-                        class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                        id="btn-descargar-jpg" 
+                        class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
                     >
-                        🔐 ADMIN
+                        DESCARGAR MI TARJETA JPG
                     </button>
-                </div>
-                
-                <!-- Input para nuevo usuario (se oculta cuando está cerrado) -->
-                <div id="stadium-input-container" class="glass-strong p-6 mb-6">
-                    <div class="flex flex-col md:flex-row gap-4 items-center">
-                        <div class="flex-1 w-full">
-                            <input 
-                                type="text" 
-                                id="input-nombre-stadium" 
-                                class="input-custom" 
-                                placeholder="👤 Ingresa tu nombre para participar"
-                                maxlength="20"
-                                autocomplete="off"
-                            >
-                        </div>
-                        <button 
-                            id="btn-participar-stadium" 
-                            class="btn-primary px-8 py-4 rounded-xl font-titulo text-white shadow-lg whitespace-nowrap"
-                        >
-                            🎯 PARTICIPAR
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Ranking (oculto hasta que haya resultados) -->
-                <div id="ranking-container" class="hidden glass-strong p-6 mb-6">
-                    <h3 class="font-titulo text-2xl titulo-gradient mb-4 text-center">
-                        🏆 RANKING ACTUAL
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="tabla-glass">
-                            <thead>
-                                <tr>
-                                    <th>Pos</th>
-                                    <th>Nombre</th>
-                                    <th>Pts</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ranking-body">
-                                <!-- Se llena dinámicamente -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Jugadas por bloque -->
-                <div class="glass-strong p-6">
-                    <h3 class="font-titulo text-2xl titulo-gradient mb-4 text-center">
-                         JUGADAS POR BLOQUE
-                    </h3>
-                    <div id="bloques-jugadas" class="space-y-4">
-                        <!-- Se llena dinámicamente -->
-                    </div>
+                    <button 
+                        id="btn-volver-inicio" 
+                        class="btn-secondary w-full py-4 rounded-xl font-titulo text-lg text-white"
+                    >
+                        VOLVER AL INICIO
+                    </button>
                 </div>
             </div>
             
-            <!-- ============================================
-                 VISTA 6: LOGIN ADMIN
-                 ============================================ -->
-            <div id="vista-admin-login" class="vista max-w-md mx-auto mt-20">
-                <div class="glass-strong p-8 text-center">
-                    <div class="text-6xl mb-4">🔐</div>
-                    <h2 class="font-titulo text-2xl titulo-gradient mb-6">
-                        ACCESO ADMINISTRADOR
-                    </h2>
-                    <div class="mb-6">
+            <div id="tarjeta-oculta" class="hidden">
+                <div id="tarjeta-jugador" class="tarjeta-jugador"></div>
+            </div>
+        </div>
+        
+        <!-- VISTA 5: STADIUM -->
+        <div id="vista-stadium" class="vista max-w-6xl mx-auto mt-8">
+            
+            <div class="glass-strong p-4 mb-6 flex items-center justify-between nav-stadium">
+                <button 
+                    id="btn-salir-stadium" 
+                    class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                >
+                    SALIR
+                </button>
+                
+                <h2 class="font-titulo text-lg md:text-xl titulo-gradient hidden sm:block">
+                    8VOS DE FINAL
+                </h2>
+                
+                <button 
+                    id="btn-admin-stadium" 
+                    class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                >
+                    ADMIN
+                </button>
+            </div>
+            
+            <div id="stadium-input-container" class="glass-strong p-6 mb-6">
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <div class="flex-1 w-full">
                         <input 
-                            type="password" 
-                            id="input-password-admin" 
-                            class="input-custom text-center" 
-                            placeholder="Contraseña"
+                            type="text" 
+                            id="input-nombre-stadium" 
+                            class="input-custom" 
+                            placeholder="Ingresa tu nombre para participar"
+                            maxlength="20"
                             autocomplete="off"
                         >
                     </div>
                     <button 
-                        id="btn-login-admin" 
-                        class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
+                        id="btn-participar-stadium" 
+                        class="btn-primary px-8 py-4 rounded-xl font-titulo text-white shadow-lg whitespace-nowrap"
                     >
-                        INGRESAR
+                        PARTICIPAR
+                    </button>
+                </div>
+            </div>
+            
+            <div id="stadium-cerrado-msg" class="hidden mensaje-cerrado mb-6">
+                Las jugadas estan cerradas. Espera los resultados del administrador.
+            </div>
+            
+            <div id="ranking-container" class="hidden glass-strong p-6 mb-6">
+                <h3 class="font-titulo text-2xl titulo-gradient mb-4 text-center">
+                    RANKING ACTUAL
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="tabla-glass">
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th>Nombre</th>
+                                <th>Pts</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ranking-body"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="glass-strong p-6">
+                <h3 class="font-titulo text-2xl titulo-gradient mb-4 text-center">
+                    JUGADAS POR BLOQUE
+                </h3>
+                <div id="bloques-jugadas" class="space-y-4"></div>
+            </div>
+        </div>
+        
+        <!-- VISTA 6: LOGIN ADMIN -->
+        <div id="vista-admin-login" class="vista max-w-md mx-auto mt-20">
+            <div class="glass-strong p-8 text-center">
+                <div class="text-6xl mb-4">!</div>
+                <h2 class="font-titulo text-2xl titulo-gradient mb-6">
+                    ACCESO ADMINISTRADOR
+                </h2>
+                <div class="mb-6">
+                    <input 
+                        type="password" 
+                        id="input-password-admin" 
+                        class="input-custom text-center" 
+                        placeholder="Contrasena"
+                        autocomplete="off"
+                    >
+                </div>
+                <button 
+                    id="btn-login-admin" 
+                    class="btn-primary w-full py-4 rounded-xl font-titulo text-lg text-white shadow-lg"
+                >
+                    INGRESAR
+                </button>
+                <button 
+                    id="btn-volver-desde-admin" 
+                    class="mt-4 text-sm text-white/60 hover:text-white transition-colors"
+                >
+                    Volver
+                </button>
+            </div>
+        </div>
+        
+        <!-- VISTA 7: PANEL ADMIN -->
+        <div id="vista-admin-panel" class="vista max-w-6xl mx-auto mt-8">
+            <div class="glass-strong p-6 mb-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="font-titulo text-2xl titulo-gradient">
+                        PANEL ADMINISTRADOR
+                    </h2>
+                    <button 
+                        id="btn-salir-admin" 
+                        class="btn-secondary px-4 py-2 rounded-lg text-sm font-semibold"
+                    >
+                        Salir
+                    </button>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="tab-btn active" data-tab="resultados">RESULTADOS</button>
+                    <button class="tab-btn" data-tab="edicion">EDICION</button>
+                    <button class="tab-btn" data-tab="control">CONTROL</button>
+                </div>
+                
+                <div id="tab-resultados" class="tab-content active"></div>
+                <div id="tab-edicion" class="tab-content"></div>
+                <div id="tab-control" class="tab-content"></div>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- MODAL CONFIRMAR -->
+    <div id="modal-confirmar" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="text-center">
+                <div class="text-6xl mb-4">!</div>
+                <h3 class="font-titulo text-2xl titulo-gradient mb-4">
+                    CONFIRMAR SELECCION
+                </h3>
+                <p class="text-white/80 mb-6">
+                    Estás seguro? <span class="text-red-400 font-bold">No podrás cambiar estas respuestas</span> después de guardar.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button 
+                        id="btn-modal-volver" 
+                        class="btn-secondary flex-1 py-3 rounded-xl font-semibold"
+                    >
+                        Volver a revisar
                     </button>
                     <button 
-                        id="btn-volver-desde-admin" 
-                        class="mt-4 text-sm text-white/60 hover:text-white transition-colors"
+                        id="btn-modal-confirmar" 
+                        class="btn-success flex-1 py-3 rounded-xl font-semibold"
                     >
-                        ← Volver
+                        Confirmar
                     </button>
                 </div>
             </div>
-            
-            <!-- ============================================
-                 VISTA 7: PANEL ADMIN
-                 ============================================ -->
-            <div id="vista-admin-panel" class="vista max-w-6xl mx-auto mt-8">
-                <div class="glass-strong p-6 mb-6">
-                    <div class="flex items-center justify-between mb-6">
-                        <h2 class="font-titulo text-2xl titulo-gradient">
-                            🎛️ PANEL ADMINISTRADOR
-                        </h2>
-                        <button 
-                            id="btn-salir-admin" 
-                            class="btn-secondary px-4 py-2 rounded-lg text-sm font-semibold"
-                        >
-                            Salir
-                        </button>
-                    </div>
-                    
-                    <!-- Pestañas -->
-                    <div class="flex flex-wrap gap-2 mb-6">
-                        <button class="tab-btn active" data-tab="resultados">
-                            📊 RESULTADOS
-                        </button>
-                        <button class="tab-btn" data-tab="edicion">
-                            ✏️ EDICIÓN
-                        </button>
-                        <button class="tab-btn" data-tab="control">
-                            🎮 CONTROL
-                        </button>
-                    </div>
-                    
-                    <!-- Contenido de pestañas -->
-                    <div id="tab-resultados" class="tab-content active">
-                        <!-- Se llena dinámicamente -->
-                    </div>
-                    
-                    <div id="tab-edicion" class="tab-content">
-                        <!-- Se llena dinámicamente -->
-                    </div>
-                    
-                    <div id="tab-control" class="tab-content">
-                        <!-- Se llena dinámicamente -->
-                    </div>
-                </div>
-            </div>
-            
         </div>
-        
-        <!-- ============================================
-             MODALES
-             ============================================ -->
-        <div id="modal-confirmar" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div class="text-center">
-                    <div class="text-6xl mb-4">️</div>
-                    <h3 class="font-titulo text-2xl titulo-gradient mb-4">
-                        CONFIRMAR SELECCIÓN
-                    </h3>
-                    <p class="text-white/80 mb-6">
-                        ¿Estás seguro? <span class="text-red-400 font-bold">No podrás cambiar estas respuestas</span> después de guardar.
-                    </p>
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <button 
-                            id="btn-modal-volver" 
-                            class="btn-secondary flex-1 py-3 rounded-xl font-semibold"
-                        >
-                            Volver a revisar
-                        </button>
-                        <button 
-                            id="btn-modal-confirmar" 
-                            class="btn-success flex-1 py-3 rounded-xl font-semibold"
-                        >
-                            ✅ Confirmar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- ============================================
-             TOAST NOTIFICATIONS
-             ============================================ -->
-        <div id="toast-container"></div>
+    </div>
     
-    <!-- ============================================
-         FIREBASE + JAVASCRIPT
-         ============================================ -->
+    <div id="toast-container"></div>
+    
     <script type="module">
-        // ============================================
-        // IMPORTACIONES DE FIREBASE
-        // ============================================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
         import { 
-            getFirestore, 
-            collection, 
-            doc, 
-            setDoc, 
-            getDoc, 
-            getDocs, 
-            updateDoc, 
-            deleteDoc,
-            query, 
-            where, 
-            onSnapshot,
-            orderBy,
-            serverTimestamp
+            getFirestore, collection, doc, setDoc, getDoc, getDocs, 
+            updateDoc, deleteDoc, query, where, onSnapshot
         } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
         
-        // ============================================
-        // CONFIGURACIÓN DE FIREBASE
-        // ============================================
         const firebaseConfig = {
             apiKey: "AIzaSyBazeOQheNIrtfHA0YaPgXZPXnfaSQn7SU",
             authDomain: "vos-de-final.firebaseapp.com",
@@ -911,111 +685,81 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        // ============================================
-        // DATOS DE PARTIDOS (8 BLOQUES)
-        // ============================================
         const PARTIDOS = [
             {
-                numero: 1,
-                local: "Canadá",
-                visitante: "Marruecos",
-                fecha: "2026-07-04T13:00:00",
-                fechaTexto: "Sáb 04/07, 1:00 PM",
+                numero: 1, local: "Canada", visitante: "Marruecos",
+                fecha: "2026-07-04T13:00:00", fechaTexto: "Sab 04/07, 1:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿El primer gol del partido será después del minuto 30 del 1T?" },
-                    { id: "p2", texto: "¿Ambos equipos anotan en los 90'?" },
-                    { id: "p3", texto: "¿Habrá menos de 2.5 goles en los 90'?" }
+                    { id: "p1", texto: "El primer gol del partido sera despues del minuto 30 del 1T?" },
+                    { id: "p2", texto: "Ambos equipos anotan en los 90?" },
+                    { id: "p3", texto: "Habra menos de 2.5 goles en los 90?" }
                 ]
             },
             {
-                numero: 2,
-                local: "Paraguay",
-                visitante: "Francia",
-                fecha: "2026-07-04T17:00:00",
-                fechaTexto: "Sáb 04/07, 5:00 PM",
+                numero: 2, local: "Paraguay", visitante: "Francia",
+                fecha: "2026-07-04T17:00:00", fechaTexto: "Sab 04/07, 5:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿Francia gana Y ambos equipos anotan?" },
-                    { id: "p2", texto: "¿Francia gana al descanso?" },
-                    { id: "p3", texto: "¿Habrá más de 3.5 goles en los 90'?" }
+                    { id: "p1", texto: "Francia gana Y ambos equipos anotan?" },
+                    { id: "p2", texto: "Francia gana al descanso?" },
+                    { id: "p3", texto: "Habra mas de 3.5 goles en los 90?" }
                 ]
             },
             {
-                numero: 3,
-                local: "Brasil",
-                visitante: "Noruega",
-                fecha: "2026-07-05T16:00:00",
-                fechaTexto: "Dom 05/07, 4:00 PM",
+                numero: 3, local: "Brasil", visitante: "Noruega",
+                fecha: "2026-07-05T16:00:00", fechaTexto: "Dom 05/07, 4:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿Ambos equipos anotan en el 2T?" },
-                    { id: "p2", texto: "¿Noruega anota el primer gol del partido?" },
-                    { id: "p3", texto: "¿El partido termina en empate en los 90'?" }
+                    { id: "p1", texto: "Ambos equipos anotan en el 2T?" },
+                    { id: "p2", texto: "Noruega anota el primer gol del partido?" },
+                    { id: "p3", texto: "El partido termina en empate en los 90?" }
                 ]
             },
             {
-                numero: 4,
-                local: "México",
-                visitante: "Inglaterra",
-                fecha: "2026-07-05T20:00:00",
-                fechaTexto: "Dom 05/07, 8:00 PM",
+                numero: 4, local: "Mexico", visitante: "Inglaterra",
+                fecha: "2026-07-05T20:00:00", fechaTexto: "Dom 05/07, 8:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿Inglaterra gana al descanso?" },
-                    { id: "p2", texto: "¿México clasifica a la siguiente fase?" },
-                    { id: "p3", texto: "¿Ambos equipos anotan en los 90'?" }
+                    { id: "p1", texto: "Inglaterra gana al descanso?" },
+                    { id: "p2", texto: "Mexico clasifica a la siguiente fase?" },
+                    { id: "p3", texto: "Ambos equipos anotan en los 90?" }
                 ]
             },
             {
-                numero: 5,
-                local: "Portugal",
-                visitante: "España",
-                fecha: "2026-07-06T15:00:00",
-                fechaTexto: "Lun 06/07, 3:00 PM",
+                numero: 5, local: "Portugal", visitante: "Espana",
+                fecha: "2026-07-06T15:00:00", fechaTexto: "Lun 06/07, 3:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿El partido termina en empate en los 90'?" },
-                    { id: "p2", texto: "¿Portugal anota primero?" },
-                    { id: "p3", texto: "¿Habrá al menos una tarjeta roja (incluyendo prórroga)?" }
+                    { id: "p1", texto: "El partido termina en empate en los 90?" },
+                    { id: "p2", texto: "Portugal anota primero?" },
+                    { id: "p3", texto: "Habra al menos una tarjeta roja (incluyendo prorroga)?" }
                 ]
             },
             {
-                numero: 6,
-                local: "EE. UU.",
-                visitante: "Bélgica",
-                fecha: "2026-07-06T20:00:00",
-                fechaTexto: "Lun 06/07, 8:00 PM",
+                numero: 6, local: "EE. UU.", visitante: "Belgica",
+                fecha: "2026-07-06T20:00:00", fechaTexto: "Lun 06/07, 8:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿EE. UU. anota primero?" },
-                    { id: "p2", texto: "¿Habrá más de 2.5 goles en los 90'?" },
-                    { id: "p3", texto: "¿El primer tiempo termina en empate?" }
+                    { id: "p1", texto: "EE. UU. anota primero?" },
+                    { id: "p2", texto: "Habra mas de 2.5 goles en los 90?" },
+                    { id: "p3", texto: "El primer tiempo termina en empate?" }
                 ]
             },
             {
-                numero: 7,
-                local: "Argentina",
-                visitante: "Egipto",
-                fecha: "2026-07-07T12:00:00",
-                fechaTexto: "Mar 07/07, 12:00 PM",
+                numero: 7, local: "Argentina", visitante: "Egipto",
+                fecha: "2026-07-07T12:00:00", fechaTexto: "Mar 07/07, 12:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿Argentina gana sin recibir goles?" },
-                    { id: "p2", texto: "¿Egipto anota al menos un gol en el 1T?" },
-                    { id: "p3", texto: "¿Habrá más de 9.5 tiros de esquina en los 90'?" }
+                    { id: "p1", texto: "Argentina gana sin recibir goles?" },
+                    { id: "p2", texto: "Egipto anota al menos un gol en el 1T?" },
+                    { id: "p3", texto: "Habra mas de 9.5 tiros de esquina en los 90?" }
                 ]
             },
             {
-                numero: 8,
-                local: "Suiza",
-                visitante: "Colombia",
-                fecha: "2026-07-07T16:00:00",
-                fechaTexto: "Mar 07/07, 4:00 PM",
+                numero: 8, local: "Suiza", visitante: "Colombia",
+                fecha: "2026-07-07T16:00:00", fechaTexto: "Mar 07/07, 4:00 PM",
                 preguntas: [
-                    { id: "p1", texto: "¿Colombia clasifica a la siguiente fase?" },
-                    { id: "p2", texto: "¿Suiza gana o empata al descanso?" },
-                    { id: "p3", texto: "¿Habrá menos de 2.5 goles en los 90'?" }
+                    { id: "p1", texto: "Colombia clasifica a la siguiente fase?" },
+                    { id: "p2", texto: "Suiza gana o empata al descanso?" },
+                    { id: "p3", texto: "Habra menos de 2.5 goles en los 90?" }
                 ]
             }
         ];
         
-        // ============================================
-        // ESTADO GLOBAL DE LA APP
-        // ============================================
         const estado = {
             usuarioActual: null,
             bloqueActual: 1,
@@ -1023,70 +767,48 @@
             modoAdmin: false
         };
         
-        // ============================================
-        // UTILIDADES
-        // ============================================
-        
-        // Mostrar/ocultar vistas
         function mostrarVista(idVista) {
             document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
             document.getElementById(idVista).classList.add('activa');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // Toast notification
         function mostrarToast(mensaje, tipo = 'info') {
             const toast = document.createElement('div');
             toast.className = `toast toast-${tipo}`;
             toast.textContent = mensaje;
             document.getElementById('toast-container').appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.animation = 'fadeIn 0.3s ease reverse';
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
         
-        // Sonidos
         function reproducirSonido(tipo) {
-            const context = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = context.createOscillator();
-            const gainNode = context.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(context.destination);
-            
-            if (tipo === 'clic') {
-                oscillator.frequency.value = 800;
-                gainNode.gain.setValueAtTime(0.3, context.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
-                oscillator.start(context.currentTime);
-                oscillator.stop(context.currentTime + 0.1);
-            } else if (tipo === 'trompeta') {
-                oscillator.frequency.value = 440;
-                oscillator.type = 'sawtooth';
-                gainNode.gain.setValueAtTime(0.3, context.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
-                oscillator.start(context.currentTime);
-                oscillator.stop(context.currentTime + 0.5);
-            }
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+                if (tipo === 'clic') {
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+                    oscillator.start(context.currentTime);
+                    oscillator.stop(context.currentTime + 0.1);
+                } else if (tipo === 'trompeta') {
+                    oscillator.frequency.value = 440;
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+                    oscillator.start(context.currentTime);
+                    oscillator.stop(context.currentTime + 0.5);
+                }
+            } catch(e) { console.log('Audio no soportado'); }
         }
         
-        // Formatear fecha
-        function formatearFecha(fechaISO) {
-            const fecha = new Date(fechaISO);
-            return fecha.toLocaleString('es-VE', {
-                weekday: 'short',
-                day: '2-digit',
-                month: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-        
-        // ============================================
-        // TEMPORIZADOR CON CIERRE AUTOMÁTICO
-        // ============================================
+        // TEMPORIZADOR
         let yaCerroAutomaticamente = false;
         
         function actualizarTemporizador() {
@@ -1095,10 +817,8 @@
             const diferencia = primerPartido - ahora;
             
             if (diferencia <= 0) {
-                document.getElementById('temporizador').textContent = '¡EN VIVO!';
+                document.getElementById('temporizador').textContent = 'EN VIVO!';
                 document.getElementById('temporizador').classList.add('text-red-400');
-                
-                // Cerrar jugadas automáticamente cuando llegue a cero (solo una vez)
                 if (!yaCerroAutomaticamente) {
                     yaCerroAutomaticamente = true;
                     cerrarJugadasAutomaticamente();
@@ -1114,57 +834,35 @@
                 `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
         }
         
-        // Función para cerrar jugadas automáticamente
         async function cerrarJugadasAutomaticamente() {
-    try {
-        console.log('⏰ Intentando cierre automático...');
-        
-        const configDoc = await getDoc(doc(db, 'config', 'global'));
-        const config = configDoc.data();
-        
-        console.log('📊 Estado actual:', config.estadoApp);
-        
-        // Solo cerrar si está ABIERTO
-        if (config.estadoApp === 'ABIERTO') {
-            await updateDoc(doc(db, 'config', 'global'), {
-                estadoApp: 'CERRADO'
-            });
-            console.log('✅ Jugadas cerradas automáticamente');
-            mostrarToast('🕐 Las jugadas se han cerrado automáticamente', 'info');
-        } else {
-            console.log('⚠️ Ya estaban cerradas');
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                if (config.estadoApp === 'ABIERTO') {
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'CERRADO' });
+                    mostrarToast('Las jugadas se han cerrado automaticamente', 'info');
+                }
+            } catch (error) {
+                console.error('Error al cerrar automaticamente:', error);
+            }
         }
-    } catch (error) {
-        console.error('❌ Error al cerrar automáticamente:', error);
-    }
-}
         
         setInterval(actualizarTemporizador, 1000);
         actualizarTemporizador();
         
-        // ============================================
-        // INICIALIZAR FIRESTORE (SI ESTÁ VACÍO)
-        // ============================================
+        // INICIALIZAR FIRESTORE
         async function inicializarFirestore() {
             try {
-                // Verificar si existe la colección 'config'
                 const configDoc = await getDoc(doc(db, 'config', 'global'));
-                
                 if (!configDoc.exists()) {
-                    // Crear documento de configuración
                     await setDoc(doc(db, 'config', 'global'), {
                         estadoApp: 'ABIERTO',
                         fechaPrimerPartido: PARTIDOS[0].fecha,
                         contrasenaAdmin: '111180'
                     });
-                    console.log('✅ Configuración inicial creada');
                 }
-                
-                // Verificar si existen los partidos
                 const partidosSnapshot = await getDocs(collection(db, 'partidos'));
-                
                 if (partidosSnapshot.empty) {
-                    // Crear los 8 partidos
                     for (const partido of PARTIDOS) {
                         await setDoc(doc(db, 'partidos', `bloque_${partido.numero}`), {
                             numero: partido.numero,
@@ -1173,26 +871,19 @@
                             fecha: partido.fecha,
                             fechaTexto: partido.fechaTexto,
                             preguntas: partido.preguntas,
-                            resultadosOficiales: {
-                                p1: null,
-                                p2: null,
-                                p3: null
-                            },
+                            resultadosOficiales: { p1: null, p2: null, p3: null },
                             estado: 'PENDIENTE'
                         });
                     }
-                    console.log('✅ Partidos iniciales creados');
                 }
             } catch (error) {
-                console.error(' Error inicializando Firestore:', error);
+                console.error('Error inicializando Firestore:', error);
             }
         }
         
         inicializarFirestore();
         
-        // ============================================
         // REGISTRO DE USUARIO
-        // ============================================
         const inputNombre = document.getElementById('input-nombre');
         const btnParticipar = document.getElementById('btn-participar');
         const mensajeSugerencia = document.getElementById('mensaje-sugerencia');
@@ -1204,32 +895,26 @@
         
         btnParticipar.addEventListener('click', async () => {
             const nombre = inputNombre.value.trim().toUpperCase();
-            
             if (!nombre) {
                 mostrarToast('Por favor ingresa tu nombre', 'danger');
                 return;
             }
             
             try {
-                // Verificar si el nombre ya existe
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const nombresExistentes = [];
-                
                 participantesSnapshot.forEach(doc => {
-                    const data = doc.data();
-                    nombresExistentes.push(data.nombre);
+                    nombresExistentes.push(doc.data().nombre);
                 });
                 
-                // Si el nombre ya existe, mostrar sugerencias
                 if (nombresExistentes.includes(nombre)) {
                     mensajeSugerencia.classList.remove('hidden');
                     sugerenciasNombres.innerHTML = '';
-                    
                     for (let i = 2; i <= 4; i++) {
                         const nombreSugerido = `${nombre}_${String(i).padStart(2, '0')}`;
                         if (!nombresExistentes.includes(nombreSugerido)) {
                             const btn = document.createElement('button');
-                            btn.className = 'chip bg-fucsia/20 text-fucsia border border-fucsia/30 cursor-pointer hover:bg-fucsia/30 transition-colors';
+                            btn.className = 'chip cursor-pointer hover:bg-white/20 transition-colors';
                             btn.textContent = nombreSugerido;
                             btn.addEventListener('click', () => {
                                 inputNombre.value = nombreSugerido;
@@ -1238,25 +923,21 @@
                             sugerenciasNombres.appendChild(btn);
                         }
                     }
-                    
-                    mostrarToast('Este nombre ya está en uso', 'danger');
+                    mostrarToast('Este nombre ya esta en uso', 'danger');
                     return;
                 }
                 
-                // Verificar si el nombre está en "sesión fantasma" (en progreso)
                 const querySesion = query(
                     collection(db, 'participantes'),
                     where('nombre', '==', nombre),
                     where('estado', '==', 'EN_PROGRESO')
                 );
                 const sesionSnapshot = await getDocs(querySesion);
-                
                 if (!sesionSnapshot.empty) {
-                    mostrarToast('Este nombre está en uso por otro dispositivo', 'danger');
+                    mostrarToast('Este nombre esta en uso por otro dispositivo', 'danger');
                     return;
                 }
                 
-                // Crear sesión fantasma
                 const timestamp = Date.now();
                 const idParticipante = `${nombre.toLowerCase().replace(/\s+/g, '_')}_${timestamp}`;
                 
@@ -1268,29 +949,18 @@
                     puntajes: {}
                 });
                 
-                estado.usuarioActual = {
-                    id: idParticipante,
-                    nombre: nombre
-                };
-                
-                // Guardar en localStorage para persistencia durante la sesión
+                estado.usuarioActual = { id: idParticipante, nombre: nombre };
                 localStorage.setItem('usuarioActual', JSON.stringify(estado.usuarioActual));
                 
-                mostrarToast('¡Bienvenido!', 'success');
+                mostrarToast('Bienvenido!', 'success');
                 reproducirSonido('clic');
-                
-                // Ir a instrucciones
                 mostrarVista('vista-instrucciones');
-                
             } catch (error) {
                 console.error('Error al registrar:', error);
-                mostrarToast('Error al registrar. Intenta de nuevo.', 'danger');
+                mostrarToast('Error al registrar', 'danger');
             }
         });
         
-        // ============================================
-        // INSTRUCCIONES
-        // ============================================
         document.getElementById('btn-empezar').addEventListener('click', () => {
             estado.bloqueActual = 1;
             estado.respuestasTemporales = {};
@@ -1298,12 +968,8 @@
             mostrarVista('vista-bloque');
         });
         
-        // ============================================
-        // CARGAR BLOQUE DE PARTIDO
-        // ============================================
         function cargarBloque(numero) {
             const partido = PARTIDOS[numero - 1];
-            
             document.getElementById('bloque-numero').textContent = numero;
             document.getElementById('bloque-partido').textContent = `${partido.local} vs ${partido.visitante}`;
             document.getElementById('bloque-fecha').textContent = partido.fechaTexto;
@@ -1320,9 +986,9 @@
                         <span class="text-yellow-400 font-numero">${index + 1}.</span> ${pregunta.texto}
                     </p>
                     <div class="flex flex-wrap gap-3">
-                        <label class="radio-custom" data-pregunta="${pregunta.id}" data-respuesta="Sí">
-                            <input type="radio" name="pregunta_${pregunta.id}" value="Sí">
-                            <span>Sí</span>
+                        <label class="radio-custom" data-pregunta="${pregunta.id}" data-respuesta="Si">
+                            <input type="radio" name="pregunta_${pregunta.id}" value="Si">
+                            <span>Si</span>
                         </label>
                         <label class="radio-custom" data-pregunta="${pregunta.id}" data-respuesta="No">
                             <input type="radio" name="pregunta_${pregunta.id}" value="No">
@@ -1333,33 +999,22 @@
                 preguntasContainer.appendChild(preguntaDiv);
             });
             
-            // Event listeners para radio buttons
-            document.querySelectorAll('.radio-custom').forEach(label => {
+            document.querySelectorAll('#preguntas-container .radio-custom').forEach(label => {
                 label.addEventListener('click', () => {
                     const preguntaId = label.dataset.pregunta;
                     const respuesta = label.dataset.respuesta;
-                    
-                    // Desmarcar otros
                     document.querySelectorAll(`.radio-custom[data-pregunta="${preguntaId}"]`).forEach(l => {
                         l.classList.remove('selected');
                     });
-                    
-                    // Marcar este
                     label.classList.add('selected');
                     label.querySelector('input').checked = true;
-                    
-                    // Guardar en estado temporal
                     estado.respuestasTemporales[`bloque_${numero}`] = estado.respuestasTemporales[`bloque_${numero}`] || {};
                     estado.respuestasTemporales[`bloque_${numero}`][preguntaId] = respuesta;
-                    
-                    // Verificar si todas las preguntas están respondidas
                     verificarCompletitud();
-                    
                     reproducirSonido('clic');
                 });
             });
             
-            // Deshabilitar botón guardar
             document.getElementById('btn-guardar-bloque').disabled = true;
         }
         
@@ -1367,15 +1022,10 @@
             const bloqueActual = estado.bloqueActual;
             const respuestasBloque = estado.respuestasTemporales[`bloque_${bloqueActual}`] || {};
             const preguntas = PARTIDOS[bloqueActual - 1].preguntas;
-            
             const todasRespondidas = preguntas.every(p => respuestasBloque[p.id]);
-            
             document.getElementById('btn-guardar-bloque').disabled = !todasRespondidas;
         }
         
-        // ============================================
-        // GUARDAR BLOQUE
-        // ============================================
         document.getElementById('btn-guardar-bloque').addEventListener('click', () => {
             document.getElementById('modal-confirmar').classList.remove('hidden');
         });
@@ -1386,70 +1036,44 @@
         
         document.getElementById('btn-modal-confirmar').addEventListener('click', async () => {
             document.getElementById('modal-confirmar').classList.add('hidden');
-            
             try {
-                // Actualizar en Firestore
                 const participanteRef = doc(db, 'participantes', estado.usuarioActual.id);
-                const updateData = {
+                await updateDoc(participanteRef, {
                     [`respuestas.bloque_${estado.bloqueActual}`]: estado.respuestasTemporales[`bloque_${estado.bloqueActual}`]
-                };
-                
-                await updateDoc(participanteRef, updateData);
-                
+                });
                 mostrarToast(`Bloque ${estado.bloqueActual} guardado`, 'success');
                 reproducirSonido('clic');
-                
-                // Avanzar al siguiente bloque
                 estado.bloqueActual++;
-                
                 if (estado.bloqueActual > 8) {
-                    // Completó todos los bloques
                     await completarParticipacion();
                 } else {
-                    // Cargar siguiente bloque
                     cargarBloque(estado.bloqueActual);
                 }
-                
             } catch (error) {
-                console.error('Error al guardar bloque:', error);
-                mostrarToast('Error al guardar. Intenta de nuevo.', 'danger');
+                console.error('Error al guardar:', error);
+                mostrarToast('Error al guardar', 'danger');
             }
         });
         
-        // ============================================
-        // COMPLETAR PARTICIPACIÓN
-        // ============================================
         async function completarParticipacion() {
             try {
-                // Actualizar estado a COMPLETADO
-                const participanteRef = doc(db, 'participantes', estado.usuarioActual.id);
-                await updateDoc(participanteRef, {
+                await updateDoc(doc(db, 'participantes', estado.usuarioActual.id), {
                     estado: 'COMPLETADO'
                 });
-                
-                // Mostrar resumen
                 mostrarResumen();
                 mostrarVista('vista-resumen');
-                
             } catch (error) {
-                console.error('Error al completar participación:', error);
-                mostrarToast('Error al completar. Intenta de nuevo.', 'danger');
+                console.error('Error al completar:', error);
             }
         }
         
-        // ============================================
-        // MOSTRAR RESUMEN
-        // ============================================
         function mostrarResumen() {
             document.getElementById('resumen-nombre').textContent = estado.usuarioActual.nombre;
-            
             const resumenContainer = document.getElementById('resumen-selecciones');
             resumenContainer.innerHTML = '';
-            
             PARTIDOS.forEach((partido, index) => {
                 const bloqueNum = index + 1;
                 const respuestas = estado.respuestasTemporales[`bloque_${bloqueNum}`] || {};
-                
                 const bloqueDiv = document.createElement('div');
                 bloqueDiv.className = 'glass p-4';
                 bloqueDiv.innerHTML = `
@@ -1461,7 +1085,7 @@
                             <div class="flex items-center gap-2 text-sm">
                                 <span class="text-white/60">${i + 1}.</span>
                                 <span class="text-white/80 flex-1">${p.texto}</span>
-                                <span class="chip ${respuestas[p.id] === 'Sí' ? 'chip-success' : 'chip-danger'}">
+                                <span class="chip ${respuestas[p.id] === 'Si' ? 'chip-success' : 'chip-danger'}">
                                     ${respuestas[p.id] || '—'}
                                 </span>
                             </div>
@@ -1472,16 +1096,12 @@
             });
         }
         
-        // ============================================
-        // DESCARGAR IMAGEN JPG
-        // ============================================
         document.getElementById('btn-descargar-jpg').addEventListener('click', async () => {
             try {
-                // Generar contenido de la tarjeta
                 const tarjetaDiv = document.getElementById('tarjeta-jugador');
                 tarjetaDiv.innerHTML = `
                     <h2 class="text-3xl mb-2">8VOS DE FINAL</h2>
-                    <p class="text-white/70 mb-6">Mundial 2026 • Tarjeta de Participación</p>
+                    <p class="text-white/70 mb-6">Mundial 2026 - Tarjeta de Participacion</p>
                     <div class="glass p-4 mb-4">
                         <p class="text-sm text-white/60 mb-1">JUGADOR</p>
                         <p class="text-2xl font-bold text-yellow-400">${estado.usuarioActual.nombre}</p>
@@ -1495,7 +1115,7 @@
                                     <p class="text-xs text-white/60 mb-2">BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}</p>
                                     <div class="flex flex-wrap gap-2">
                                         ${partido.preguntas.map((p, i) => `
-                                            <span class="chip ${respuestas[p.id] === 'Sí' ? 'chip-success' : 'chip-danger'} text-xs">
+                                            <span class="chip ${respuestas[p.id] === 'Si' ? 'chip-success' : 'chip-danger'} text-xs">
                                                 P${i + 1}: ${respuestas[p.id]}
                                             </span>
                                         `).join('')}
@@ -1508,112 +1128,63 @@
                         Generado el ${new Date().toLocaleString('es-VE')}
                     </p>
                 `;
-                
-                // Mostrar temporalmente para capturar
                 document.getElementById('tarjeta-oculta').classList.remove('hidden');
-                
-                // Esperar un momento para que se renderice
                 await new Promise(resolve => setTimeout(resolve, 100));
-                
-                // Generar imagen con html2canvas
                 const canvas = await html2canvas(tarjetaDiv, {
-                    scale: 3, // Alta calidad
-                    backgroundColor: null,
-                    useCORS: true
+                    scale: 3, backgroundColor: null, useCORS: true
                 });
-                
-                // Convertir a JPG y descargar
                 const link = document.createElement('a');
                 link.download = `8vos_final_${estado.usuarioActual.nombre}.jpg`;
                 link.href = canvas.toDataURL('image/jpeg', 0.95);
                 link.click();
-                
-                // Ocultar tarjeta
                 document.getElementById('tarjeta-oculta').classList.add('hidden');
-                
-                mostrarToast('¡Tarjeta descargada!', 'success');
+                mostrarToast('Tarjeta descargada!', 'success');
                 reproducirSonido('trompeta');
-                
             } catch (error) {
                 console.error('Error al generar imagen:', error);
-                mostrarToast('Error al generar imagen', 'danger');
             }
         });
         
-        // ============================================
-        // VOLVER AL INICIO (STADIUM)
-        // ============================================
         document.getElementById('btn-volver-inicio').addEventListener('click', () => {
             cargarStadium();
             mostrarVista('vista-stadium');
         });
         
-        // ============================================
-        // CARGAR STADIUM (PANTALLA PRINCIPAL) - MEJORADO
-        // ============================================
+        // CARGAR STADIUM - VERSIÓN CORREGIDA
         async function cargarStadium() {
-    try {
-        console.log('🔄 Cargando stadium...');
-        
-        // Verificar estado de la app
-        const configDoc = await getDoc(doc(db, 'config', 'global'));
-        const config = configDoc.data();
-        const estadoApp = config.estadoApp;
-        
-        console.log('📊 Estado actual:', estadoApp);
-        
-        // Ocultar/mostrar input según estado
-        const inputContainer = document.getElementById('stadium-input-container');
-        if (inputContainer) {
-            if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
-                inputContainer.classList.add('hidden');
-                console.log('✅ Input oculto (estado CERRADO/FINALIZADO)');
-            } else {
-                inputContainer.classList.remove('hidden');
-                console.log('✅ Input visible (estado ABIERTO)');
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                const estadoApp = config.estadoApp;
+                
+                const inputContainer = document.getElementById('stadium-input-container');
+                const cerradoMsg = document.getElementById('stadium-cerrado-msg');
+                
+                if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                    if (inputContainer) inputContainer.classList.add('hidden');
+                    if (cerradoMsg) cerradoMsg.classList.remove('hidden');
+                } else {
+                    if (inputContainer) inputContainer.classList.remove('hidden');
+                    if (cerradoMsg) cerradoMsg.classList.add('hidden');
+                }
+                
+                await cargarRanking();
+                await cargarJugadasPorBloque();
+                
+            } catch (error) {
+                console.error('Error cargando stadium:', error);
+                mostrarToast('Error al cargar datos', 'danger');
             }
         }
         
-        // Forzar recarga del ranking
-        document.getElementById('ranking-container').classList.add('hidden');
-        document.getElementById('bloques-jugadas').innerHTML = '';
-        
-        // Cargar ranking
-        await cargarRanking();
-        
-        // Cargar jugadas por bloque
-        await cargarJugadasPorBloque();
-        
-        // Mostrar mensaje si está cerrado
-        if (estadoApp === 'CERRADO') {
-            mostrarToast('🕐 Jugadas cerradas - Esperando resultados', 'info');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error cargando stadium:', error);
-        mostrarToast('Error al cargar datos', 'danger');
-    }
-}
-        
-		
-		
-		
-        // ============================================
-        // CARGAR RANKING - MEJORADO CON MANEJO DE ERRORES
-        // ============================================
         async function cargarRanking() {
             try {
                 const rankingContainer = document.getElementById('ranking-container');
                 const rankingBody = document.getElementById('ranking-body');
-                
-                if (!rankingContainer || !rankingBody) {
-                    console.error('Elementos del ranking no encontrados');
-                    return;
-                }
+                if (!rankingContainer || !rankingBody) return;
                 
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const participantes = [];
-                
                 participantesSnapshot.forEach(doc => {
                     const data = doc.data();
                     if (data.estado === 'COMPLETADO') {
@@ -1625,66 +1196,48 @@
                     }
                 });
                 
-                // Solo mostrar ranking si hay resultados
                 const hayResultados = participantes.some(p => p.puntajeTotal > 0);
-                
                 if (!hayResultados) {
                     rankingContainer.classList.add('hidden');
                     return;
                 }
                 
                 rankingContainer.classList.remove('hidden');
-                
-                // Ordenar por puntaje (descendente) y luego alfabéticamente
                 participantes.sort((a, b) => {
-                    if (b.puntajeTotal !== a.puntajeTotal) {
-                        return b.puntajeTotal - a.puntajeTotal;
-                    }
+                    if (b.puntajeTotal !== a.puntajeTotal) return b.puntajeTotal - a.puntajeTotal;
                     return a.nombre.localeCompare(b.nombre);
                 });
                 
                 rankingBody.innerHTML = '';
-                
                 participantes.forEach((p, index) => {
-					const posicion = index + 1;
-					let emoji = '';
-					if (posicion === 1) emoji = '🥇';
-					else if (posicion === 2) emoji = '🥈';  // ESTE ESTABA VACÍO
-					else if (posicion === 3) emoji = '🥉';
-					else emoji = `${posicion}°`;
-    
-					const row = document.createElement('tr');
-					row.innerHTML = `
-						<td class="font-numero text-xl">${emoji}</td>
-						<td class="font-nombre">${p.nombre}</td>
-						<td class="font-numero text-xl text-yellow-400">${p.puntajeTotal}</td>
-					`;
-					rankingBody.appendChild(row);
-				});
-                
+                    const posicion = index + 1;
+                    let emoji = '';
+                    if (posicion === 1) emoji = '1ro';
+                    else if (posicion === 2) emoji = '2do';
+                    else if (posicion === 3) emoji = '3ro';
+                    else emoji = posicion + 'to';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="font-numero text-xl">${emoji}</td>
+                        <td class="font-nombre">${p.nombre}</td>
+                        <td class="font-numero text-xl text-yellow-400">${p.puntajeTotal}</td>
+                    `;
+                    rankingBody.appendChild(row);
+                });
             } catch (error) {
                 console.error('Error cargando ranking:', error);
             }
         }
         
-        // ============================================
-        // CARGAR JUGADAS POR BLOQUE - MEJORADO CON MANEJO DE ERRORES
-        // ============================================
         async function cargarJugadasPorBloque() {
             try {
                 const bloquesContainer = document.getElementById('bloques-jugadas');
-                
-                if (!bloquesContainer) {
-                    console.error('Contenedor de bloques no encontrado');
-                    return;
-                }
-                
+                if (!bloquesContainer) return;
                 bloquesContainer.innerHTML = '';
                 
-                // Cargar participantes
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const participantes = [];
-                
                 participantesSnapshot.forEach(doc => {
                     const data = doc.data();
                     if (data.estado === 'COMPLETADO') {
@@ -1697,16 +1250,13 @@
                     }
                 });
                 
-                // Cargar resultados oficiales
                 const partidosSnapshot = await getDocs(collection(db, 'partidos'));
                 const resultadosOficiales = {};
-                
                 partidosSnapshot.forEach(doc => {
                     const data = doc.data();
                     resultadosOficiales[`bloque_${data.numero}`] = data.resultadosOficiales;
                 });
                 
-                // Generar tabla por bloque
                 PARTIDOS.forEach((partido, index) => {
                     const bloqueNum = index + 1;
                     const bloqueKey = `bloque_${bloqueNum}`;
@@ -1716,13 +1266,11 @@
                     const bloqueDiv = document.createElement('div');
                     bloqueDiv.className = 'glass p-4';
                     
-                    // Construir HTML con preguntas visibles debajo del título
                     let tablaHTML = `
                         <div class="mb-4">
                             <h4 class="font-semibold text-yellow-400 mb-2 text-lg">
                                 BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
                             </h4>
-                            <!-- PREGUNTAS COMPLETAS EN TEXTO PEQUEÑO -->
                             <div class="space-y-1 mb-3 pl-2 border-l-2 border-fucsia/30">
                                 ${partido.preguntas.map((p, i) => `
                                     <p class="text-xs text-white/60 font-medium">
@@ -1736,15 +1284,9 @@
                                 <thead>
                                     <tr>
                                         <th>Nombre</th>
-                                        <th title="${partido.preguntas[0].texto}" class="cursor-help">
-                                            P1 <span class="text-white/40 text-xs">ⓘ</span>
-                                        </th>
-                                        <th title="${partido.preguntas[1].texto}" class="cursor-help">
-                                            P2 <span class="text-white/40 text-xs"></span>
-                                        </th>
-                                        <th title="${partido.preguntas[2].texto}" class="cursor-help">
-                                            P3 <span class="text-white/40 text-xs">ⓘ</span>
-                                        </th>
+                                        <th title="${partido.preguntas[0].texto}" class="cursor-help">P1</th>
+                                        <th title="${partido.preguntas[1].texto}" class="cursor-help">P2</th>
+                                        <th title="${partido.preguntas[2].texto}" class="cursor-help">P3</th>
                                         ${hayResultados ? '<th>Pts</th>' : ''}
                                     </tr>
                                 </thead>
@@ -1754,62 +1296,46 @@
                     participantes.forEach(p => {
                         const respuestas = p.respuestas[bloqueKey] || {};
                         let puntos = 0;
-                        
-                        tablaHTML += `<tr>
-                            <td class="font-nombre">${p.nombre}</td>`;
+                        tablaHTML += `<tr><td class="font-nombre">${p.nombre}</td>`;
                         
                         partido.preguntas.forEach(pregunta => {
-    const respuesta = respuestas[pregunta.id] || '—';
-    let clase = '';
-    let icono = '';
-    
-    if (hayResultados && respuesta !== '—') {
-        const correcta = resultados[pregunta.id];
-        if (respuesta === correcta) {
-            clase = 'chip-success';
-            icono = '✔️';  // ESTE PODRÍA ESTAR CORROMPIDO
-            puntos++;
-        } else {
-            clase = 'chip-danger';
-            icono = '❌';  // ESTE PODRÍA ESTAR CORROMPIDO
-        }
-    }
-    
-    tablaHTML += `
-        <td>
-            <span class="chip ${clase}">
-                ${respuesta} ${icono}
-            </span>
-        </td>
-    `;
-});
+                            const respuesta = respuestas[pregunta.id] || '—';
+                            let clase = '';
+                            let icono = '';
+                            if (hayResultados && respuesta !== '—') {
+                                const correcta = resultados[pregunta.id];
+                                if (respuesta === correcta) {
+                                    clase = 'chip-success';
+                                    icono = 'OK';
+                                    puntos++;
+                                } else {
+                                    clase = 'chip-danger';
+                                    icono = 'X';
+                                }
+                            }
+                            tablaHTML += `
+                                <td>
+                                    <span class="chip ${clase}">${respuesta} ${icono}</span>
+                                </td>
+                            `;
+                        });
                         
                         if (hayResultados) {
                             tablaHTML += `<td class="font-numero text-yellow-400">${puntos}</td>`;
                         }
-                        
                         tablaHTML += `</tr>`;
                     });
                     
-                    tablaHTML += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
-                    
+                    tablaHTML += `</tbody></table></div>`;
                     bloqueDiv.innerHTML = tablaHTML;
                     bloquesContainer.appendChild(bloqueDiv);
                 });
-                
             } catch (error) {
                 console.error('Error cargando jugadas:', error);
-                mostrarToast('Error al cargar jugadas', 'danger');
             }
         }
         
-        // ============================================
-        // ADMIN - LOGIN
-        // ============================================
+        // ADMIN LOGIN
         document.getElementById('btn-admin-link').addEventListener('click', () => {
             mostrarVista('vista-admin-login');
         });
@@ -1820,143 +1346,104 @@
         
         document.getElementById('btn-login-admin').addEventListener('click', async () => {
             const password = document.getElementById('input-password-admin').value;
-            
             try {
                 const configDoc = await getDoc(doc(db, 'config', 'global'));
                 const config = configDoc.data();
-                
                 if (password === config.contrasenaAdmin) {
                     estado.modoAdmin = true;
                     mostrarToast('Acceso concedido', 'success');
                     cargarPanelAdmin();
                     mostrarVista('vista-admin-panel');
                 } else {
-                    mostrarToast('Contraseña incorrecta', 'danger');
+                    mostrarToast('Contrasena incorrecta', 'danger');
                 }
             } catch (error) {
-                console.error('Error al verificar contraseña:', error);
-                mostrarToast('Error de conexión', 'danger');
+                console.error('Error:', error);
+                mostrarToast('Error de conexion', 'danger');
             }
         });
         
+        // BOTON SALIR ADMIN - AHORA VA AL STADIUM
         document.getElementById('btn-salir-admin').addEventListener('click', () => {
-			estado.modoAdmin = false;
-			// CAMBIAR: Ir al stadium en lugar del registro
-			cargarStadium();
-			mostrarVista('vista-stadium');
-		});
+            estado.modoAdmin = false;
+            cargarStadium();
+            mostrarVista('vista-stadium');
+        });
         
-        // ============================================
-        // BOTONES DE NAVEGACIÓN EN STADIUM
-        // ============================================
+        // BOTONES STADIUM
         document.getElementById('btn-salir-stadium').addEventListener('click', () => {
-            // Limpiar estado del usuario actual
             estado.usuarioActual = null;
             localStorage.removeItem('usuarioActual');
-            
-            // Limpiar inputs
             document.getElementById('input-nombre').value = '';
             document.getElementById('input-nombre-stadium').value = '';
-            
-            // Volver a la pantalla de registro
             mostrarVista('vista-registro');
-            mostrarToast('Sesión cerrada', 'info');
+            mostrarToast('Sesion cerrada', 'info');
         });
         
         document.getElementById('btn-admin-stadium').addEventListener('click', () => {
             mostrarVista('vista-admin-login');
         });
         
-        // ============================================
-        // ADMIN - PESTAÑAS
-        // ============================================
+        // PESTAÑAS ADMIN
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
                 btn.classList.add('active');
                 document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
             });
         });
         
-        // ============================================
-        // ADMIN - CARGAR PANEL
-        // ============================================
         async function cargarPanelAdmin() {
             await cargarTabResultados();
             await cargarTabEdicion();
             await cargarTabControl();
         }
         
-        // ============================================
-        // ADMIN - TAB RESULTADOS
-        // ============================================
         async function cargarTabResultados() {
             const container = document.getElementById('tab-resultados');
-            container.innerHTML = '';
-            
-            // Selector de bloque
-            const selectorHTML = `
+            container.innerHTML = `
                 <div class="mb-6">
-                    <label class="block text-sm font-semibold text-white/80 mb-2">
-                        Seleccionar bloque
-                    </label>
+                    <label class="block text-sm font-semibold text-white/80 mb-2">Seleccionar bloque</label>
                     <select id="select-bloque-resultados" class="input-custom">
-                        ${PARTIDOS.map(p => `
-                            <option value="${p.numero}">Bloque ${p.numero}: ${p.local} vs ${p.visitante}</option>
-                        `).join('')}
+                        ${PARTIDOS.map(p => `<option value="${p.numero}">Bloque ${p.numero}: ${p.local} vs ${p.visitante}</option>`).join('')}
                     </select>
                 </div>
                 <div id="formulario-resultados"></div>
             `;
-            
-            container.innerHTML = selectorHTML;
-            
             document.getElementById('select-bloque-resultados').addEventListener('change', (e) => {
                 cargarFormularioResultados(parseInt(e.target.value));
             });
-            
             cargarFormularioResultados(1);
         }
         
         async function cargarFormularioResultados(bloqueNum) {
             const container = document.getElementById('formulario-resultados');
             const partido = PARTIDOS[bloqueNum - 1];
-            
             try {
-                // Cargar resultados oficiales actuales
                 const partidoDoc = await getDoc(doc(db, 'partidos', `bloque_${bloqueNum}`));
                 const resultados = partidoDoc.data().resultadosOficiales;
                 
                 let html = `
                     <div class="glass p-6 mb-6">
-                        <h3 class="font-titulo text-xl titulo-gradient mb-4">
-                            BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
-                        </h3>
+                        <h3 class="font-titulo text-xl titulo-gradient mb-4">BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}</h3>
                         <div class="space-y-4">
                 `;
-                
                 partido.preguntas.forEach((pregunta, index) => {
                     const respuestaActual = resultados[pregunta.id];
-                    
                     html += `
                         <div class="glass p-4">
                             <p class="font-semibold text-white/90 mb-3">
                                 <span class="text-yellow-400 font-numero">${index + 1}.</span> ${pregunta.texto}
                             </p>
                             <div class="flex flex-wrap gap-3">
-                                <label class="radio-custom ${respuestaActual === 'Sí' ? 'selected' : ''}" 
-                                       data-pregunta="${pregunta.id}" 
-                                       data-respuesta="Sí"
-                                       data-bloque="${bloqueNum}">
-                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="Sí" ${respuestaActual === 'Sí' ? 'checked' : ''}>
-                                    <span>Sí</span>
+                                <label class="radio-custom ${respuestaActual === 'Si' ? 'selected' : ''}" 
+                                       data-pregunta="${pregunta.id}" data-respuesta="Si" data-bloque="${bloqueNum}">
+                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="Si" ${respuestaActual === 'Si' ? 'checked' : ''}>
+                                    <span>Si</span>
                                 </label>
                                 <label class="radio-custom ${respuestaActual === 'No' ? 'selected' : ''}" 
-                                       data-pregunta="${pregunta.id}" 
-                                       data-respuesta="No"
-                                       data-bloque="${bloqueNum}">
+                                       data-pregunta="${pregunta.id}" data-respuesta="No" data-bloque="${bloqueNum}">
                                     <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="No" ${respuestaActual === 'No' ? 'checked' : ''}>
                                     <span>No</span>
                                 </label>
@@ -1964,86 +1451,62 @@
                         </div>
                     `;
                 });
-                
                 html += `
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3 mt-6">
-                            <button id="btn-guardar-resultados" class="btn-success flex-1 py-3 rounded-xl font-semibold">
-                                💾 GUARDAR RESULTADOS
-                            </button>
-                            <button id="btn-copiar-whatsapp" class="btn-primary flex-1 py-3 rounded-xl font-semibold">
-                                📋 COPIAR PARA WHATSAPP
-                            </button>
+                            <button id="btn-guardar-resultados" class="btn-success flex-1 py-3 rounded-xl font-semibold">GUARDAR RESULTADOS</button>
+                            <button id="btn-copiar-whatsapp" class="btn-primary flex-1 py-3 rounded-xl font-semibold">COPIAR PARA WHATSAPP</button>
                         </div>
                     </div>
                 `;
-                
                 container.innerHTML = html;
                 
-                // Event listeners para radio buttons
                 container.querySelectorAll('.radio-custom').forEach(label => {
                     label.addEventListener('click', () => {
                         const preguntaId = label.dataset.pregunta;
                         const bloque = parseInt(label.dataset.bloque);
-                        
                         container.querySelectorAll(`.radio-custom[data-pregunta="${preguntaId}"][data-bloque="${bloque}"]`).forEach(l => {
                             l.classList.remove('selected');
                         });
-                        
                         label.classList.add('selected');
                         label.querySelector('input').checked = true;
                     });
                 });
                 
-                // Guardar resultados
                 document.getElementById('btn-guardar-resultados').addEventListener('click', async () => {
                     const nuevosResultados = {};
-                    
                     partido.preguntas.forEach(pregunta => {
                         const selected = container.querySelector(`.radio-custom.selected[data-pregunta="${pregunta.id}"]`);
-                        if (selected) {
-                            nuevosResultados[pregunta.id] = selected.dataset.respuesta;
-                        }
+                        if (selected) nuevosResultados[pregunta.id] = selected.dataset.respuesta;
                     });
-                    
                     if (Object.keys(nuevosResultados).length !== 3) {
                         mostrarToast('Debes seleccionar todas las respuestas', 'danger');
                         return;
                     }
-                    
                     try {
-                        // Actualizar resultados oficiales
                         await updateDoc(doc(db, 'partidos', `bloque_${bloqueNum}`), {
                             resultadosOficiales: nuevosResultados,
                             estado: 'COMPLETADO'
                         });
-                        
-                        // Recalcular puntajes de todos los participantes
                         await recalcularPuntajes();
-                        
                         mostrarToast('Resultados guardados', 'success');
-                        
                     } catch (error) {
-                        console.error('Error al guardar resultados:', error);
+                        console.error('Error:', error);
                         mostrarToast('Error al guardar', 'danger');
                     }
                 });
                 
-                // Copiar para WhatsApp
                 document.getElementById('btn-copiar-whatsapp').addEventListener('click', async () => {
                     const texto = generarTextoWhatsApp(bloqueNum);
-                    
                     try {
                         await navigator.clipboard.writeText(texto);
-                        mostrarToast('¡Copiado! Pégalo en WhatsApp', 'success');
+                        mostrarToast('Copiado! Pegalo en WhatsApp', 'success');
                     } catch (error) {
-                        console.error('Error al copiar:', error);
                         mostrarToast('Error al copiar', 'danger');
                     }
                 });
-                
             } catch (error) {
-                console.error('Error cargando formulario:', error);
+                console.error('Error:', error);
             }
         }
         
@@ -2051,91 +1514,57 @@
             try {
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const partidosSnapshot = await getDocs(collection(db, 'partidos'));
-                
                 const resultadosOficiales = {};
                 partidosSnapshot.forEach(doc => {
                     const data = doc.data();
                     resultadosOficiales[`bloque_${data.numero}`] = data.resultadosOficiales;
                 });
-                
                 participantesSnapshot.forEach(async (docSnap) => {
                     const data = docSnap.data();
                     if (data.estado !== 'COMPLETADO') return;
-                    
                     const puntajes = {};
                     let total = 0;
-                    
                     for (let i = 1; i <= 8; i++) {
                         const bloqueKey = `bloque_${i}`;
                         const respuestas = data.respuestas[bloqueKey] || {};
                         const resultados = resultadosOficiales[bloqueKey] || {};
-                        
                         let puntos = 0;
-                        
                         for (const preguntaId in respuestas) {
-                            if (respuestas[preguntaId] === resultados[preguntaId]) {
-                                puntos++;
-                            }
+                            if (respuestas[preguntaId] === resultados[preguntaId]) puntos++;
                         }
-                        
                         puntajes[bloqueKey] = puntos;
                         total += puntos;
                     }
-                    
                     puntajes.total = total;
-                    
-                    await updateDoc(doc(db, 'participantes', docSnap.id), {
-                        puntajes: puntajes
-                    });
+                    await updateDoc(doc(db, 'participantes', docSnap.id), { puntajes: puntajes });
                 });
-                
             } catch (error) {
-                console.error('Error recalculando puntajes:', error);
+                console.error('Error recalculando:', error);
             }
         }
         
         function generarTextoWhatsApp(bloqueNum) {
             const partido = PARTIDOS[bloqueNum - 1];
-            
-            let texto = `*🏆 8VOS DE FINAL - BLOQUE ${bloqueNum} 🏆*\n`;
+            let texto = `*8VOS DE FINAL - BLOQUE ${bloqueNum}*\n`;
             texto += `*${partido.local} vs ${partido.visitante}*\n\n`;
-            
             texto += `Resultados cargados correctamente.\n`;
             texto += `Revisa el ranking en la app.\n\n`;
             texto += `_Generado el ${new Date().toLocaleString('es-VE')}_`;
-            
             return texto;
         }
         
-        // ============================================
-        // ADMIN - TAB EDICIÓN
-        // ============================================
         async function cargarTabEdicion() {
             const container = document.getElementById('tab-edicion');
-            
             try {
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const participantes = [];
-                
                 participantesSnapshot.forEach(doc => {
                     const data = doc.data();
                     if (data.estado === 'COMPLETADO') {
-                        participantes.push({
-                            id: doc.id,
-                            nombre: data.nombre,
-                            respuestas: data.respuestas,
-                            puntajes: data.puntajes
-                        });
+                        participantes.push({ id: doc.id, nombre: data.nombre, respuestas: data.respuestas, puntajes: data.puntajes });
                     }
                 });
-                
-                let html = `
-                    <h3 class="font-titulo text-xl titulo-gradient mb-4">
-                        👥 PARTICIPANTES (${participantes.length})
-                    </h3>
-                    <div class="space-y-3">
-                `;
-                
+                let html = `<h3 class="font-titulo text-xl titulo-gradient mb-4">PARTICIPANTES (${participantes.length})</h3><div class="space-y-3">`;
                 participantes.forEach(p => {
                     html += `
                         <div class="glass p-4">
@@ -2144,122 +1573,76 @@
                                 <span class="chip chip-success">${p.puntajes?.total || 0} pts</span>
                             </div>
                             <div class="flex flex-wrap gap-2">
-                                <button class="btn-secondary px-3 py-1 rounded-lg text-xs font-semibold" 
-                                        onclick="editarParticipante('${p.id}')">
-                                    ✏️ Editar
-                                </button>
-                                <button class="btn-danger px-3 py-1 rounded-lg text-xs font-semibold" 
-                                        onclick="eliminarParticipante('${p.id}')">
-                                    ️ Eliminar
-                                </button>
-                                <button class="btn-primary px-3 py-1 rounded-lg text-xs font-semibold" 
-                                        onclick="generarJPGAdmin('${p.id}')">
-                                     Generar JPG
-                                </button>
+                                <button class="btn-secondary px-3 py-1 rounded-lg text-xs font-semibold" onclick="editarParticipante('${p.id}')">Editar</button>
+                                <button class="btn-danger px-3 py-1 rounded-lg text-xs font-semibold" onclick="eliminarParticipante('${p.id}')">Eliminar</button>
+                                <button class="btn-primary px-3 py-1 rounded-lg text-xs font-semibold" onclick="generarJPGAdmin('${p.id}')">Generar JPG</button>
                             </div>
                         </div>
                     `;
                 });
-                
                 html += `</div>`;
                 container.innerHTML = html;
-                
             } catch (error) {
-                console.error('Error cargando edición:', error);
+                console.error('Error:', error);
             }
         }
         
-        // Funciones globales para onclick
-        window.editarParticipante = async (id) => {
-            mostrarToast('Función de edición en desarrollo', 'info');
-        };
-        
+        window.editarParticipante = async (id) => { mostrarToast('Funcion en desarrollo', 'info'); };
         window.eliminarParticipante = async (id) => {
-            if (confirm('¿Estás seguro de eliminar este participante?')) {
+            if (confirm('Eliminar este participante?')) {
                 try {
                     await deleteDoc(doc(db, 'participantes', id));
                     mostrarToast('Participante eliminado', 'success');
                     cargarTabEdicion();
                 } catch (error) {
-                    console.error('Error al eliminar:', error);
                     mostrarToast('Error al eliminar', 'danger');
                 }
             }
         };
+        window.generarJPGAdmin = async (id) => { mostrarToast('Funcion en desarrollo', 'info'); };
         
-        window.generarJPGAdmin = async (id) => {
-            mostrarToast('Función de generación JPG en desarrollo', 'info');
-        };
-        
-        // ============================================
-        // ADMIN - TAB CONTROL
-        // ============================================
         async function cargarTabControl() {
             const container = document.getElementById('tab-control');
-            
             try {
                 const configDoc = await getDoc(doc(db, 'config', 'global'));
                 const config = configDoc.data();
                 const estadoApp = config.estadoApp;
-                
                 let colorSemaforo = 'semaforo-verde';
                 let textoEstado = 'ABIERTO';
-                
-                if (estadoApp === 'CERRADO') {
-                    colorSemaforo = 'semaforo-rojo';
-                    textoEstado = 'CERRADO';
-                } else if (estadoApp === 'FINALIZADO') {
-                    colorSemaforo = 'semaforo-amarillo';
-                    textoEstado = 'FINALIZADO';
-                }
+                if (estadoApp === 'CERRADO') { colorSemaforo = 'semaforo-rojo'; textoEstado = 'CERRADO'; }
+                else if (estadoApp === 'FINALIZADO') { colorSemaforo = 'semaforo-amarillo'; textoEstado = 'FINALIZADO'; }
                 
                 container.innerHTML = `
                     <div class="glass p-6 mb-6">
-                        <h3 class="font-titulo text-xl titulo-gradient mb-4">
-                            ESTADO ACTUAL
-                        </h3>
+                        <h3 class="font-titulo text-xl titulo-gradient mb-4">ESTADO ACTUAL</h3>
                         <div class="flex items-center gap-3 mb-6">
                             <span class="semaforo ${colorSemaforo}"></span>
                             <span class="font-nombre text-2xl">${textoEstado}</span>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <button id="btn-cerrar-jugadas" class="btn-danger flex-1 py-3 rounded-xl font-semibold">
-                                🔴 CERRAR JUGADAS
-                            </button>
-                            <button id="btn-abrir-jugadas" class="btn-success flex-1 py-3 rounded-xl font-semibold">
-                                 ABRIR JUGADAS
-                            </button>
+                            <button id="btn-cerrar-jugadas" class="btn-danger flex-1 py-3 rounded-xl font-semibold">CERRAR JUGADAS</button>
+                            <button id="btn-abrir-jugadas" class="btn-success flex-1 py-3 rounded-xl font-semibold">ABRIR JUGADAS</button>
                         </div>
                     </div>
                 `;
                 
                 document.getElementById('btn-cerrar-jugadas').addEventListener('click', async () => {
-                    await updateDoc(doc(db, 'config', 'global'), {
-                        estadoApp: 'CERRADO'
-                    });
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'CERRADO' });
                     mostrarToast('Jugadas cerradas', 'success');
                     cargarTabControl();
                 });
-                
                 document.getElementById('btn-abrir-jugadas').addEventListener('click', async () => {
-                    await updateDoc(doc(db, 'config', 'global'), {
-                        estadoApp: 'ABIERTO'
-                    });
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'ABIERTO' });
                     mostrarToast('Jugadas abiertas', 'success');
                     cargarTabControl();
                 });
-                
             } catch (error) {
-                console.error('Error cargando control:', error);
+                console.error('Error:', error);
             }
         }
         
-        // ============================================
-        // PARTICIPAR DESDE STADIUM
-        // ============================================
         document.getElementById('btn-participar-stadium').addEventListener('click', () => {
             const nombre = document.getElementById('input-nombre-stadium').value.trim().toUpperCase();
-            
             if (nombre) {
                 document.getElementById('input-nombre').value = nombre;
                 mostrarVista('vista-registro');
@@ -2269,51 +1652,35 @@
             }
         });
         
-        // ============================================
-        // LISTENER EN TIEMPO REAL PARA CAMBIOS DE ESTADO
-        // ============================================
+        // LISTENER EN TIEMPO REAL - VERSIÓN CORREGIDA COMPLETA
         onSnapshot(doc(db, 'config', 'global'), (docSnap) => {
-    console.log('📡 Cambio detectado en config');
-    
-    if (docSnap.exists()) {
-        const data = docSnap.data();
-        const estadoApp = data.estadoApp;
-        
-        console.log('🔄 Nuevo estado:', estadoApp);
-        
-        // Si estamos en la vista stadium, recargar
-        if (document.getElementById('vista-stadium').classList.contains('activa')) {
-            console.log('📍 Recargando stadium...');
-            cargarStadi…ById('temporizador').classList.add('text-red-400');
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const estadoApp = data.estadoApp;
                 
-                // Deshabilitar input
-                document.getElementById('input-nombre').disabled = true;
-                document.getElementById('btn-participar').disabled = true;
-                document.getElementById('btn-participar').classList.add('opacity-50');
+                if (document.getElementById('vista-stadium').classList.contains('activa')) {
+                    cargarStadium();
+                }
                 
-                // Mostrar mensaje
-                mostrarToast('🚫 Las jugadas están cerradas', 'danger');
-            }
-        }
-    }
-});
-		
-		
-        
-        // ============================================
-        // PERSISTENCIA DE SESIÓN
-        // ============================================
-        window.addEventListener('beforeunload', () => {
-            // Si el usuario cierra la página antes de completar, borrar sesión fantasma
-            if (estado.usuarioActual && !estado.modoAdmin) {
-                const usuarioGuardado = JSON.parse(localStorage.getItem('usuarioActual'));
-                if (usuarioGuardado) {
-                    navigator.sendBeacon(`/api/limpiar-sesion/${usuarioGuardado.id}`);
+                if (document.getElementById('vista-registro').classList.contains('activa')) {
+                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                        document.getElementById('temporizador').textContent = 'CERRADO';
+                        document.getElementById('temporizador').classList.add('text-red-400');
+                        document.getElementById('registro-form-container').classList.add('hidden');
+                        document.getElementById('registro-cerrado-msg').classList.remove('hidden');
+                        document.getElementById('input-nombre').disabled = true;
+                        document.getElementById('btn-participar').disabled = true;
+                    } else {
+                        document.getElementById('registro-form-container').classList.remove('hidden');
+                        document.getElementById('registro-cerrado-msg').classList.add('hidden');
+                        document.getElementById('input-nombre').disabled = false;
+                        document.getElementById('btn-participar').disabled = false;
+                    }
                 }
             }
         });
         
-        // Verificar si hay sesión activa al cargar
+        // PERSISTENCIA
         window.addEventListener('load', () => {
             const usuarioGuardado = JSON.parse(localStorage.getItem('usuarioActual'));
             if (usuarioGuardado) {
@@ -2332,27 +1699,6 @@
                 });
             }
         });
-		
-		        // ============================================
-        // DEBUG AL CARGAR LA PÁGINA
-        // ============================================
-        window.addEventListener('load', async () => {
-            console.log('🚀 App cargada');
-            
-            try {
-                const configDoc = await getDoc(doc(db, 'config', 'global'));
-                if (configDoc.exists()) {
-                    console.log('📊 Configuración:', configDoc.data());
-                }
-                
-                const participantesCount = (await getDocs(collection(db, 'participantes'))).size;
-                console.log(` Participantes: ${participantesCount}`);
-                
-            } catch (error) {
-                console.error('❌ Error en debug:', error);
-            }
-        });
-        
     </script>
     
 </body>
