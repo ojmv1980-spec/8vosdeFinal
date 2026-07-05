@@ -569,7 +569,7 @@
                  ============================================ -->
             <div id="vista-instrucciones" class="vista max-w-md mx-auto mt-20">
                 <div class="glass-strong p-8 text-center">
-                    <div class="text-6xl mb-4">⚠️</div>
+                    <div class="text-6xl mb-4">️</div>
                     <h2 class="font-titulo text-2xl titulo-gradient mb-6">
                         IMPORTANTE
                     </h2>
@@ -637,7 +637,7 @@
             <div id="vista-resumen" class="vista max-w-2xl mx-auto mt-8">
                 <div class="glass-strong p-6 md:p-8 mb-6">
                     <div class="text-center mb-6">
-                        <div class="text-6xl mb-4 animate-rebotar">🎉</div>
+                        <div class="text-6xl mb-4 animate-rebotar"></div>
                         <h2 class="font-titulo text-3xl titulo-gradient mb-2">
                             ¡PARTICIPACIÓN COMPLETA!
                         </h2>
@@ -702,8 +702,8 @@
                     </button>
                 </div>
                 
-                <!-- Input para nuevo usuario -->
-                <div class="glass-strong p-6 mb-6">
+                <!-- Input para nuevo usuario (se oculta cuando está cerrado) -->
+                <div id="stadium-input-container" class="glass-strong p-6 mb-6">
                     <div class="flex flex-col md:flex-row gap-4 items-center">
                         <div class="flex-1 w-full">
                             <input 
@@ -748,7 +748,7 @@
                 <!-- Jugadas por bloque -->
                 <div class="glass-strong p-6">
                     <h3 class="font-titulo text-2xl titulo-gradient mb-4 text-center">
-                        📊 JUGADAS POR BLOQUE
+                         JUGADAS POR BLOQUE
                     </h3>
                     <div id="bloques-jugadas" class="space-y-4">
                         <!-- Se llena dinámicamente -->
@@ -842,7 +842,7 @@
         <div id="modal-confirmar" class="modal-overlay hidden">
             <div class="modal-content">
                 <div class="text-center">
-                    <div class="text-6xl mb-4">⚠️</div>
+                    <div class="text-6xl mb-4">️</div>
                     <h3 class="font-titulo text-2xl titulo-gradient mb-4">
                         CONFIRMAR SELECCIÓN
                     </h3>
@@ -1085,8 +1085,10 @@
         }
         
         // ============================================
-        // TEMPORIZADOR
+        // TEMPORIZADOR CON CIERRE AUTOMÁTICO
         // ============================================
+        let yaCerroAutomaticamente = false;
+        
         function actualizarTemporizador() {
             const primerPartido = new Date(PARTIDOS[0].fecha);
             const ahora = new Date();
@@ -1095,6 +1097,12 @@
             if (diferencia <= 0) {
                 document.getElementById('temporizador').textContent = '¡EN VIVO!';
                 document.getElementById('temporizador').classList.add('text-red-400');
+                
+                // Cerrar jugadas automáticamente cuando llegue a cero (solo una vez)
+                if (!yaCerroAutomaticamente) {
+                    yaCerroAutomaticamente = true;
+                    cerrarJugadasAutomaticamente();
+                }
                 return;
             }
             
@@ -1104,6 +1112,24 @@
             
             document.getElementById('temporizador').textContent = 
                 `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+        }
+        
+        // Función para cerrar jugadas automáticamente
+        async function cerrarJugadasAutomaticamente() {
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                
+                // Solo cerrar si está ABIERTO
+                if (config.estadoApp === 'ABIERTO') {
+                    await updateDoc(doc(db, 'config', 'global'), {
+                        estadoApp: 'CERRADO'
+                    });
+                    mostrarToast(' Las jugadas se han cerrado automáticamente', 'info');
+                }
+            } catch (error) {
+                console.error('Error al cerrar automáticamente:', error);
+            }
         }
         
         setInterval(actualizarTemporizador, 1000);
@@ -1151,7 +1177,7 @@
                     console.log('✅ Partidos iniciales creados');
                 }
             } catch (error) {
-                console.error('❌ Error inicializando Firestore:', error);
+                console.error(' Error inicializando Firestore:', error);
             }
         }
         
@@ -1516,23 +1542,55 @@
         });
         
         // ============================================
-        // CARGAR STADIUM (PANTALLA PRINCIPAL)
+        // CARGAR STADIUM (PANTALLA PRINCIPAL) - MEJORADO
         // ============================================
         async function cargarStadium() {
             try {
+                // Verificar estado de la app
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                const estadoApp = config.estadoApp;
+                
+                // Ocultar/mostrar input según estado
+                const inputContainer = document.getElementById('stadium-input-container');
+                if (inputContainer) {
+                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                        inputContainer.classList.add('hidden');
+                    } else {
+                        inputContainer.classList.remove('hidden');
+                    }
+                }
+                
                 // Cargar ranking
                 await cargarRanking();
                 
                 // Cargar jugadas por bloque
                 await cargarJugadasPorBloque();
                 
+                // Mostrar mensaje si está cerrado
+                if (estadoApp === 'CERRADO') {
+                    mostrarToast('Jugadas cerradas - Esperando resultados', 'info');
+                }
+                
             } catch (error) {
                 console.error('Error cargando stadium:', error);
+                mostrarToast('Error al cargar datos', 'danger');
             }
         }
         
+        // ============================================
+        // CARGAR RANKING - MEJORADO CON MANEJO DE ERRORES
+        // ============================================
         async function cargarRanking() {
             try {
+                const rankingContainer = document.getElementById('ranking-container');
+                const rankingBody = document.getElementById('ranking-body');
+                
+                if (!rankingContainer || !rankingBody) {
+                    console.error('Elementos del ranking no encontrados');
+                    return;
+                }
+                
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
                 const participantes = [];
                 
@@ -1551,11 +1609,11 @@
                 const hayResultados = participantes.some(p => p.puntajeTotal > 0);
                 
                 if (!hayResultados) {
-                    document.getElementById('ranking-container').classList.add('hidden');
+                    rankingContainer.classList.add('hidden');
                     return;
                 }
                 
-                document.getElementById('ranking-container').classList.remove('hidden');
+                rankingContainer.classList.remove('hidden');
                 
                 // Ordenar por puntaje (descendente) y luego alfabéticamente
                 participantes.sort((a, b) => {
@@ -1565,14 +1623,13 @@
                     return a.nombre.localeCompare(b.nombre);
                 });
                 
-                const rankingBody = document.getElementById('ranking-body');
                 rankingBody.innerHTML = '';
                 
                 participantes.forEach((p, index) => {
                     const posicion = index + 1;
                     let emoji = '';
                     if (posicion === 1) emoji = '🥇';
-                    else if (posicion === 2) emoji = '🥈';
+                    else if (posicion === 2) emoji = '';
                     else if (posicion === 3) emoji = '🥉';
                     else emoji = `${posicion}°`;
                     
@@ -1590,9 +1647,18 @@
             }
         }
         
+        // ============================================
+        // CARGAR JUGADAS POR BLOQUE - MEJORADO CON MANEJO DE ERRORES
+        // ============================================
         async function cargarJugadasPorBloque() {
             try {
                 const bloquesContainer = document.getElementById('bloques-jugadas');
+                
+                if (!bloquesContainer) {
+                    console.error('Contenedor de bloques no encontrado');
+                    return;
+                }
+                
                 bloquesContainer.innerHTML = '';
                 
                 // Cargar participantes
@@ -1654,7 +1720,7 @@
                                             P1 <span class="text-white/40 text-xs">ⓘ</span>
                                         </th>
                                         <th title="${partido.preguntas[1].texto}" class="cursor-help">
-                                            P2 <span class="text-white/40 text-xs">ⓘ</span>
+                                            P2 <span class="text-white/40 text-xs"></span>
                                         </th>
                                         <th title="${partido.preguntas[2].texto}" class="cursor-help">
                                             P3 <span class="text-white/40 text-xs">ⓘ</span>
@@ -1717,6 +1783,7 @@
                 
             } catch (error) {
                 console.error('Error cargando jugadas:', error);
+                mostrarToast('Error al cargar jugadas', 'danger');
             }
         }
         
@@ -2011,8 +2078,6 @@
             let texto = `*🏆 8VOS DE FINAL - BLOQUE ${bloqueNum} 🏆*\n`;
             texto += `*${partido.local} vs ${partido.visitante}*\n\n`;
             
-            // Aquí deberías cargar los resultados y participantes
-            // Por simplicidad, generamos un texto básico
             texto += `Resultados cargados correctamente.\n`;
             texto += `Revisa el ranking en la app.\n\n`;
             texto += `_Generado el ${new Date().toLocaleString('es-VE')}_`;
@@ -2063,11 +2128,11 @@
                                 </button>
                                 <button class="btn-danger px-3 py-1 rounded-lg text-xs font-semibold" 
                                         onclick="eliminarParticipante('${p.id}')">
-                                    🗑️ Eliminar
+                                    ️ Eliminar
                                 </button>
                                 <button class="btn-primary px-3 py-1 rounded-lg text-xs font-semibold" 
                                         onclick="generarJPGAdmin('${p.id}')">
-                                    📥 Generar JPG
+                                     Generar JPG
                                 </button>
                             </div>
                         </div>
@@ -2140,7 +2205,7 @@
                                 🔴 CERRAR JUGADAS
                             </button>
                             <button id="btn-abrir-jugadas" class="btn-success flex-1 py-3 rounded-xl font-semibold">
-                                🟢 ABRIR JUGADAS
+                                 ABRIR JUGADAS
                             </button>
                         </div>
                     </div>
@@ -2183,15 +2248,36 @@
         });
         
         // ============================================
+        // LISTENER EN TIEMPO REAL PARA CAMBIOS DE ESTADO
+        // ============================================
+        onSnapshot(doc(db, 'config', 'global'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const estadoApp = data.estadoApp;
+                
+                // Si estamos en la vista stadium, recargar
+                if (document.getElementById('vista-stadium').classList.contains('activa')) {
+                    cargarStadium();
+                }
+                
+                // Si estamos en la vista registro y el estado cambió a CERRADO, actualizar temporizador
+                if (document.getElementById('vista-registro').classList.contains('activa')) {
+                    if (estadoApp === 'CERRADO') {
+                        document.getElementById('temporizador').textContent = 'CERRADO';
+                        document.getElementById('temporizador').classList.add('text-red-400');
+                    }
+                }
+            }
+        });
+        
+        // ============================================
         // PERSISTENCIA DE SESIÓN
         // ============================================
         window.addEventListener('beforeunload', () => {
             // Si el usuario cierra la página antes de completar, borrar sesión fantasma
             if (estado.usuarioActual && !estado.modoAdmin) {
-                // Verificar si completó
                 const usuarioGuardado = JSON.parse(localStorage.getItem('usuarioActual'));
                 if (usuarioGuardado) {
-                    // Marcar para eliminación (se hace asíncronamente)
                     navigator.sendBeacon(`/api/limpiar-sesion/${usuarioGuardado.id}`);
                 }
             }
@@ -2201,16 +2287,13 @@
         window.addEventListener('load', () => {
             const usuarioGuardado = JSON.parse(localStorage.getItem('usuarioActual'));
             if (usuarioGuardado) {
-                // Verificar si existe en Firestore
                 getDoc(doc(db, 'participantes', usuarioGuardado.id)).then(docSnap => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         if (data.estado === 'EN_PROGRESO') {
-                            // Sesión incompleta, eliminar
                             deleteDoc(doc(db, 'participantes', usuarioGuardado.id));
                             localStorage.removeItem('usuarioActual');
                         } else if (data.estado === 'COMPLETADO') {
-                            // Ya completó, ir al stadium
                             estado.usuarioActual = usuarioGuardado;
                             cargarStadium();
                             mostrarVista('vista-stadium');
