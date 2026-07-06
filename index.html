@@ -801,4 +801,980 @@
             toast.textContent = mensaje;
             document.getElementById('toast-container').appendChild(toast);
             setTimeout(() => {
-                toast.style.animation = 'fadeIn 0.
+                toast.style.animation = 'fadeIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        function reproducirSonido(tipo) {
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = context.createOscillator();
+                const gainNode = context.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(context.destination);
+                if (tipo === 'clic') {
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
+                    oscillator.start(context.currentTime);
+                    oscillator.stop(context.currentTime + 0.1);
+                } else if (tipo === 'trompeta') {
+                    oscillator.frequency.value = 440;
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.setValueAtTime(0.3, context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.5);
+                    oscillator.start(context.currentTime);
+                    oscillator.stop(context.currentTime + 0.5);
+                }
+            } catch(e) { console.log('Audio no soportado'); }
+        }
+        
+        let yaCerroAutomaticamente = false;
+        
+        function actualizarTemporizador() {
+            const primerPartido = new Date(PARTIDOS[0].fecha);
+            const ahora = new Date();
+            const diferencia = primerPartido - ahora;
+            
+            if (diferencia <= 0) {
+                document.getElementById('temporizador').textContent = 'EN VIVO!';
+                document.getElementById('temporizador').classList.add('text-red-400');
+                if (!yaCerroAutomaticamente) {
+                    yaCerroAutomaticamente = true;
+                    cerrarJugadasAutomaticamente();
+                }
+                return;
+            }
+            
+            const horas = Math.floor(diferencia / (1000 * 60 * 60));
+            const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+            const segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+            
+            document.getElementById('temporizador').textContent = 
+                `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundos).padStart(2, '0')}`;
+        }
+        
+        async function cerrarJugadasAutomaticamente() {
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                if (config.estadoApp === 'ABIERTO') {
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'CERRADO' });
+                    mostrarToast('Las jugadas se han cerrado automaticamente', 'info');
+                }
+            } catch (error) {
+                console.error('Error al cerrar automaticamente:', error);
+            }
+        }
+        
+        setInterval(actualizarTemporizador, 1000);
+        actualizarTemporizador();
+        
+        async function inicializarFirestore() {
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                if (!configDoc.exists()) {
+                    await setDoc(doc(db, 'config', 'global'), {
+                        estadoApp: 'ABIERTO',
+                        fechaPrimerPartido: PARTIDOS[0].fecha,
+                        contrasenaAdmin: '111180'
+                    });
+                }
+                const partidosSnapshot = await getDocs(collection(db, 'partidos'));
+                if (partidosSnapshot.empty) {
+                    for (const partido of PARTIDOS) {
+                        await setDoc(doc(db, 'partidos', `bloque_${partido.numero}`), {
+                            numero: partido.numero,
+                            equipoLocal: partido.local,
+                            equipoVisitante: partido.visitante,
+                            fecha: partido.fecha,
+                            fechaTexto: partido.fechaTexto,
+                            preguntas: partido.preguntas,
+                            resultadosOficiales: { p1: null, p2: null, p3: null },
+                            estado: 'PENDIENTE'
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error inicializando Firestore:', error);
+            }
+        }
+        
+        inicializarFirestore();
+        
+        const inputNombre = document.getElementById('input-nombre');
+        const btnParticipar = document.getElementById('btn-participar');
+        const mensajeSugerencia = document.getElementById('mensaje-sugerencia');
+        const sugerenciasNombres = document.getElementById('sugerencias-nombres');
+        
+        inputNombre.addEventListener('input', () => {
+            mensajeSugerencia.classList.add('hidden');
+        });
+        
+        btnParticipar.addEventListener('click', async () => {
+            const nombre = inputNombre.value.trim().toUpperCase();
+            if (!nombre) {
+                mostrarToast('Por favor ingresa tu nombre', 'danger');
+                return;
+            }
+            
+            try {
+                const participantesSnapshot = await getDocs(collection(db, 'participantes'));
+                const nombresExistentes = [];
+                participantesSnapshot.forEach(doc => {
+                    nombresExistentes.push(doc.data().nombre);
+                });
+                
+                if (nombresExistentes.includes(nombre)) {
+                    mensajeSugerencia.classList.remove('hidden');
+                    sugerenciasNombres.innerHTML = '';
+                    for (let i = 2; i <= 4; i++) {
+                        const nombreSugerido = `${nombre}_${String(i).padStart(2, '0')}`;
+                        if (!nombresExistentes.includes(nombreSugerido)) {
+                            const btn = document.createElement('button');
+                            btn.className = 'chip cursor-pointer hover:bg-white/20 transition-colors';
+                            btn.textContent = nombreSugerido;
+                            btn.addEventListener('click', () => {
+                                inputNombre.value = nombreSugerido;
+                                mensajeSugerencia.classList.add('hidden');
+                            });
+                            sugerenciasNombres.appendChild(btn);
+                        }
+                    }
+                    mostrarToast('Este nombre ya esta en uso', 'danger');
+                    return;
+                }
+                
+                const querySesion = query(
+                    collection(db, 'participantes'),
+                    where('nombre', '==', nombre),
+                    where('estado', '==', 'EN_PROGRESO')
+                );
+                const sesionSnapshot = await getDocs(querySesion);
+                if (!sesionSnapshot.empty) {
+                    mostrarToast('Este nombre esta en uso por otro dispositivo', 'danger');
+                    return;
+                }
+                
+                const timestamp = Date.now();
+                const idParticipante = `${nombre.toLowerCase().replace(/\s+/g, '_')}_${timestamp}`;
+                
+                await setDoc(doc(db, 'participantes', idParticipante), {
+                    nombre: nombre,
+                    estado: 'EN_PROGRESO',
+                    timestamp: timestamp,
+                    respuestas: {},
+                    puntajes: {}
+                });
+                
+                estado.usuarioActual = { id: idParticipante, nombre: nombre };
+                localStorage.setItem('usuarioActual', JSON.stringify(estado.usuarioActual));
+                
+                mostrarToast('Bienvenido!', 'success');
+                reproducirSonido('clic');
+                mostrarVista('vista-instrucciones');
+            } catch (error) {
+                console.error('Error al registrar:', error);
+                mostrarToast('Error al registrar', 'danger');
+            }
+        });
+        
+        document.getElementById('btn-empezar').addEventListener('click', () => {
+            estado.bloqueActual = 1;
+            estado.respuestasTemporales = {};
+            cargarBloque(1);
+            mostrarVista('vista-bloque');
+        });
+        
+        function cargarBloque(numero) {
+            const partido = PARTIDOS[numero - 1];
+            document.getElementById('bloque-numero').textContent = numero;
+            document.getElementById('bloque-partido').textContent = `${partido.local} vs ${partido.visitante}`;
+            document.getElementById('bloque-fecha').textContent = partido.fechaTexto;
+            document.getElementById('progreso-fill').style.width = `${(numero / 8) * 100}%`;
+            
+            const preguntasContainer = document.getElementById('preguntas-container');
+            preguntasContainer.innerHTML = '';
+            
+            partido.preguntas.forEach((pregunta, index) => {
+                const preguntaDiv = document.createElement('div');
+                preguntaDiv.className = 'glass p-6';
+                preguntaDiv.innerHTML = `
+                    <p class="font-semibold text-white/90 mb-4">
+                        <span class="text-yellow-400 font-numero">${index + 1}.</span> ${pregunta.texto}
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <label class="radio-custom" data-pregunta="${pregunta.id}" data-respuesta="Si">
+                            <input type="radio" name="pregunta_${pregunta.id}" value="Si">
+                            <span>Si</span>
+                        </label>
+                        <label class="radio-custom" data-pregunta="${pregunta.id}" data-respuesta="No">
+                            <input type="radio" name="pregunta_${pregunta.id}" value="No">
+                            <span>No</span>
+                        </label>
+                    </div>
+                `;
+                preguntasContainer.appendChild(preguntaDiv);
+            });
+            
+            document.querySelectorAll('#preguntas-container .radio-custom').forEach(label => {
+                label.addEventListener('click', () => {
+                    const preguntaId = label.dataset.pregunta;
+                    const respuesta = label.dataset.respuesta;
+                    document.querySelectorAll(`.radio-custom[data-pregunta="${preguntaId}"]`).forEach(l => {
+                        l.classList.remove('selected');
+                    });
+                    label.classList.add('selected');
+                    label.querySelector('input').checked = true;
+                    estado.respuestasTemporales[`bloque_${numero}`] = estado.respuestasTemporales[`bloque_${numero}`] || {};
+                    estado.respuestasTemporales[`bloque_${numero}`][preguntaId] = respuesta;
+                    verificarCompletitud();
+                    reproducirSonido('clic');
+                });
+            });
+            
+            document.getElementById('btn-guardar-bloque').disabled = true;
+        }
+        
+        function verificarCompletitud() {
+            const bloqueActual = estado.bloqueActual;
+            const respuestasBloque = estado.respuestasTemporales[`bloque_${bloqueActual}`] || {};
+            const preguntas = PARTIDOS[bloqueActual - 1].preguntas;
+            const todasRespondidas = preguntas.every(p => respuestasBloque[p.id]);
+            document.getElementById('btn-guardar-bloque').disabled = !todasRespondidas;
+        }
+        
+        document.getElementById('btn-guardar-bloque').addEventListener('click', () => {
+            document.getElementById('modal-confirmar').classList.remove('hidden');
+        });
+        
+        document.getElementById('btn-modal-volver').addEventListener('click', () => {
+            document.getElementById('modal-confirmar').classList.add('hidden');
+        });
+        
+        document.getElementById('btn-modal-confirmar').addEventListener('click', async () => {
+            document.getElementById('modal-confirmar').classList.add('hidden');
+            try {
+                const participanteRef = doc(db, 'participantes', estado.usuarioActual.id);
+                await updateDoc(participanteRef, {
+                    [`respuestas.bloque_${estado.bloqueActual}`]: estado.respuestasTemporales[`bloque_${estado.bloqueActual}`]
+                });
+                mostrarToast(`Bloque ${estado.bloqueActual} guardado`, 'success');
+                reproducirSonido('clic');
+                estado.bloqueActual++;
+                if (estado.bloqueActual > 8) {
+                    await completarParticipacion();
+                } else {
+                    cargarBloque(estado.bloqueActual);
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                mostrarToast('Error al guardar', 'danger');
+            }
+        });
+        
+        async function completarParticipacion() {
+            try {
+                await updateDoc(doc(db, 'participantes', estado.usuarioActual.id), {
+                    estado: 'COMPLETADO'
+                });
+                mostrarResumen();
+                mostrarVista('vista-resumen');
+            } catch (error) {
+                console.error('Error al completar:', error);
+            }
+        }
+        
+        function mostrarResumen() {
+            document.getElementById('resumen-nombre').textContent = estado.usuarioActual.nombre;
+            const resumenContainer = document.getElementById('resumen-selecciones');
+            resumenContainer.innerHTML = '';
+            PARTIDOS.forEach((partido, index) => {
+                const bloqueNum = index + 1;
+                const respuestas = estado.respuestasTemporales[`bloque_${bloqueNum}`] || {};
+                const bloqueDiv = document.createElement('div');
+                bloqueDiv.className = 'glass p-4';
+                bloqueDiv.innerHTML = `
+                    <h4 class="font-semibold text-yellow-400 mb-3">
+                        BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
+                    </h4>
+                    <div class="space-y-2">
+                        ${partido.preguntas.map((p, i) => `
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="text-white/60">${i + 1}.</span>
+                                <span class="text-white/80 flex-1">${p.texto}</span>
+                                <span class="chip ${respuestasIguales(respuestas[p.id], 'Si') ? 'chip-success' : 'chip-danger'}">
+                                    ${respuestas[p.id] || '—'}
+                                </span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                resumenContainer.appendChild(bloqueDiv);
+            });
+        }
+        
+        document.getElementById('btn-descargar-jpg').addEventListener('click', async () => {
+            try {
+                const tarjetaDiv = document.getElementById('tarjeta-jugador');
+                tarjetaDiv.innerHTML = `
+                    <h2 class="text-3xl mb-2">8VOS DE FINAL</h2>
+                    <p class="text-white/70 mb-6">Mundial 2026 - Tarjeta de Participacion</p>
+                    <div class="glass p-4 mb-4">
+                        <p class="text-sm text-white/60 mb-1">JUGADOR</p>
+                        <p class="text-2xl font-bold text-yellow-400">${estado.usuarioActual.nombre}</p>
+                    </div>
+                    <div class="space-y-3">
+                        ${PARTIDOS.map((partido, index) => {
+                            const bloqueNum = index + 1;
+                            const respuestas = estado.respuestasTemporales[`bloque_${bloqueNum}`] || {};
+                            return `
+                                <div class="glass p-3">
+                                    <p class="text-xs text-white/60 mb-2">BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}</p>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${partido.preguntas.map((p, i) => `
+                                            <span class="chip ${respuestasIguales(respuestas[p.id], 'Si') ? 'chip-success' : 'chip-danger'} text-xs">
+                                                P${i + 1}: ${respuestas[p.id]}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                    <p class="text-center text-xs text-white/40 mt-6">
+                        Generado el ${new Date().toLocaleString('es-VE')}
+                    </p>
+                `;
+                document.getElementById('tarjeta-oculta').classList.remove('hidden');
+                await new Promise(resolve => setTimeout(resolve, 100));
+                const canvas = await html2canvas(tarjetaDiv, {
+                    scale: 3, backgroundColor: null, useCORS: true
+                });
+                const link = document.createElement('a');
+                link.download = `8vos_final_${estado.usuarioActual.nombre}.jpg`;
+                link.href = canvas.toDataURL('image/jpeg', 0.95);
+                link.click();
+                document.getElementById('tarjeta-oculta').classList.add('hidden');
+                mostrarToast('Tarjeta descargada!', 'success');
+                reproducirSonido('trompeta');
+            } catch (error) {
+                console.error('Error al generar imagen:', error);
+            }
+        });
+        
+        document.getElementById('btn-volver-inicio').addEventListener('click', () => {
+            cargarStadium();
+            mostrarVista('vista-stadium');
+        });
+        
+        async function cargarStadium() {
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                const estadoApp = config.estadoApp;
+                
+                const inputContainer = document.getElementById('stadium-input-container');
+                const cerradoMsg = document.getElementById('stadium-cerrado-msg');
+                
+                if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                    if (inputContainer) inputContainer.classList.add('hidden');
+                    if (cerradoMsg) cerradoMsg.classList.remove('hidden');
+                } else {
+                    if (inputContainer) inputContainer.classList.remove('hidden');
+                    if (cerradoMsg) cerradoMsg.classList.add('hidden');
+                }
+                
+                await cargarRanking();
+                await cargarJugadasPorBloque();
+                
+            } catch (error) {
+                console.error('Error cargando stadium:', error);
+                mostrarToast('Error al cargar datos', 'danger');
+            }
+        }
+        
+        async function cargarRanking() {
+            try {
+                const rankingContainer = document.getElementById('ranking-container');
+                const rankingBody = document.getElementById('ranking-body');
+                if (!rankingContainer || !rankingBody) return;
+                
+                const participantesSnapshot = await getDocs(collection(db, 'participantes'));
+                const participantes = [];
+                participantesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.estado === 'COMPLETADO') {
+                        participantes.push({
+                            id: doc.id,
+                            nombre: data.nombre,
+                            puntajeTotal: data.puntajes?.total || 0
+                        });
+                    }
+                });
+                
+                const hayResultados = participantes.some(p => p.puntajeTotal > 0);
+                if (!hayResultados) {
+                    rankingContainer.classList.add('hidden');
+                    return;
+                }
+                
+                rankingContainer.classList.remove('hidden');
+                participantes.sort((a, b) => {
+                    if (b.puntajeTotal !== a.puntajeTotal) return b.puntajeTotal - a.puntajeTotal;
+                    return a.nombre.localeCompare(b.nombre);
+                });
+                
+                rankingBody.innerHTML = '';
+                participantes.forEach((p, index) => {
+                    const posicion = index + 1;
+                    let emoji = '';
+                    if (posicion === 1) emoji = '1ro';
+                    else if (posicion === 2) emoji = '2do';
+                    else if (posicion === 3) emoji = '3ro';
+                    else emoji = posicion + 'to';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="font-numero text-xl">${emoji}</td>
+                        <td class="font-nombre">${p.nombre}</td>
+                        <td class="font-numero text-xl text-yellow-400">${p.puntajeTotal}</td>
+                    `;
+                    rankingBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error cargando ranking:', error);
+            }
+        }
+        
+        async function cargarJugadasPorBloque() {
+            try {
+                console.log('📊 Cargando jugadas por bloque...');
+                const bloquesContainer = document.getElementById('bloques-jugadas');
+                if (!bloquesContainer) return;
+                bloquesContainer.innerHTML = '';
+                
+                const participantesSnapshot = await getDocs(collection(db, 'participantes'));
+                const participantes = [];
+                participantesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.estado === 'COMPLETADO') {
+                        participantes.push({
+                            id: doc.id,
+                            nombre: data.nombre,
+                            respuestas: data.respuestas || {},
+                            puntajes: data.puntajes || {}
+                        });
+                    }
+                });
+                
+                console.log(`👥 Participantes cargados: ${participantes.length}`);
+                
+                const partidosSnapshot = await getDocs(collection(db, 'partidos'));
+                const resultadosOficiales = {};
+                partidosSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    resultadosOficiales[`bloque_${data.numero}`] = data.resultadosOficiales;
+                });
+                
+                console.log('📋 Resultados oficiales:', resultadosOficiales);
+                
+                PARTIDOS.forEach((partido, index) => {
+                    const bloqueNum = index + 1;
+                    const bloqueKey = `bloque_${bloqueNum}`;
+                    const resultados = resultadosOficiales[bloqueKey] || {};
+                    const hayResultados = Object.values(resultados).some(r => r !== null && r !== undefined);
+                    
+                    console.log(`\n🔍 BLOQUE ${bloqueNum}:`, partido.local, 'vs', partido.visitante);
+                    console.log('Resultados oficiales:', resultados);
+                    
+                    const bloqueDiv = document.createElement('div');
+                    bloqueDiv.className = 'glass p-4';
+                    
+                    let tablaHTML = `
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-yellow-400 mb-2 text-lg">
+                                BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}
+                            </h4>
+                            <div class="space-y-1 mb-3 pl-2 border-l-2 border-fucsia/30">
+                                ${partido.preguntas.map((p, i) => `
+                                    <p class="text-xs text-white/60 font-medium">
+                                        <span class="text-fucsia font-bold">P${i + 1}:</span> ${p.texto}
+                                        ${hayResultados ? `<span class="text-green-400 ml-2">(Correcta: ${resultados[p.id] || 'N/A'})</span>` : ''}
+                                    </p>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="tabla-glass text-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <th title="${partido.preguntas[0].texto}" class="cursor-help">P1</th>
+                                        <th title="${partido.preguntas[1].texto}" class="cursor-help">P2</th>
+                                        <th title="${partido.preguntas[2].texto}" class="cursor-help">P3</th>
+                                        ${hayResultados ? '<th>Pts</th>' : ''}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                    `;
+                    
+                    participantes.forEach(p => {
+                        const respuestas = p.respuestas[bloqueKey] || {};
+                        let puntos = 0;
+                        tablaHTML += `<tr><td class="font-nombre">${p.nombre}</td>`;
+                        
+                        partido.preguntas.forEach(pregunta => {
+                            const respuesta = respuestas[pregunta.id] || '—';
+                            let clase = '';
+                            let icono = '';
+                            
+                            if (hayResultados && respuesta !== '—') {
+                                const correcta = resultados[pregunta.id];
+                                const esCorrecta = respuestasIguales(respuesta, correcta);
+                                
+                                console.log(`  ${p.nombre} - ${pregunta.id}: "${respuesta}" vs "${correcta}" = ${esCorrecta ? '✓' : '✗'}`);
+                                
+                                if (esCorrecta) {
+                                    clase = 'chip-success';
+                                    icono = 'OK';
+                                    puntos++;
+                                } else {
+                                    clase = 'chip-danger';
+                                    icono = 'X';
+                                }
+                            }
+                            
+                            tablaHTML += `
+                                <td>
+                                    <span class="chip ${clase}">${respuesta} ${icono}</span>
+                                </td>
+                            `;
+                        });
+                        
+                        if (hayResultados) {
+                            tablaHTML += `<td class="font-numero text-yellow-400">${puntos}</td>`;
+                        }
+                        tablaHTML += `</tr>`;
+                    });
+                    
+                    tablaHTML += `</tbody></table></div>`;
+                    bloqueDiv.innerHTML = tablaHTML;
+                    bloquesContainer.appendChild(bloqueDiv);
+                });
+                
+                console.log('✅ Jugadas cargadas correctamente\n');
+                
+            } catch (error) {
+                console.error('❌ Error cargando jugadas:', error);
+                mostrarToast('Error al cargar jugadas', 'danger');
+            }
+        }
+        
+        document.getElementById('btn-admin-link').addEventListener('click', () => {
+            mostrarVista('vista-admin-login');
+        });
+        
+        document.getElementById('btn-volver-desde-admin').addEventListener('click', () => {
+            mostrarVista('vista-registro');
+        });
+        
+        document.getElementById('btn-login-admin').addEventListener('click', async () => {
+            const password = document.getElementById('input-password-admin').value;
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                if (password === config.contrasenaAdmin) {
+                    estado.modoAdmin = true;
+                    mostrarToast('Acceso concedido', 'success');
+                    cargarPanelAdmin();
+                    mostrarVista('vista-admin-panel');
+                } else {
+                    mostrarToast('Contrasena incorrecta', 'danger');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarToast('Error de conexion', 'danger');
+            }
+        });
+        
+        document.getElementById('btn-salir-admin').addEventListener('click', () => {
+            estado.modoAdmin = false;
+            cargarStadium();
+            mostrarVista('vista-stadium');
+        });
+        
+        document.getElementById('btn-salir-stadium').addEventListener('click', () => {
+            estado.usuarioActual = null;
+            localStorage.removeItem('usuarioActual');
+            document.getElementById('input-nombre').value = '';
+            document.getElementById('input-nombre-stadium').value = '';
+            mostrarVista('vista-registro');
+            mostrarToast('Sesion cerrada', 'info');
+        });
+        
+        document.getElementById('btn-admin-stadium').addEventListener('click', () => {
+            mostrarVista('vista-admin-login');
+        });
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+            });
+        });
+        
+        async function cargarPanelAdmin() {
+            await cargarTabResultados();
+            await cargarTabEdicion();
+            await cargarTabControl();
+        }
+        
+        async function cargarTabResultados() {
+            const container = document.getElementById('tab-resultados');
+            container.innerHTML = `
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-white/80 mb-2">Seleccionar bloque</label>
+                    <select id="select-bloque-resultados" class="input-custom">
+                        ${PARTIDOS.map(p => `<option value="${p.numero}">Bloque ${p.numero}: ${p.local} vs ${p.visitante}</option>`).join('')}
+                    </select>
+                </div>
+                <div id="formulario-resultados"></div>
+            `;
+            document.getElementById('select-bloque-resultados').addEventListener('change', (e) => {
+                cargarFormularioResultados(parseInt(e.target.value));
+            });
+            cargarFormularioResultados(1);
+        }
+        
+        async function cargarFormularioResultados(bloqueNum) {
+            const container = document.getElementById('formulario-resultados');
+            const partido = PARTIDOS[bloqueNum - 1];
+            try {
+                const partidoDoc = await getDoc(doc(db, 'partidos', `bloque_${bloqueNum}`));
+                const resultados = partidoDoc.data().resultadosOficiales;
+                
+                let html = `
+                    <div class="glass p-6 mb-6">
+                        <h3 class="font-titulo text-xl titulo-gradient mb-4">BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}</h3>
+                        <div class="space-y-4">
+                `;
+                partido.preguntas.forEach((pregunta, index) => {
+                    const respuestaActual = resultados[pregunta.id];
+                    html += `
+                        <div class="glass p-4">
+                            <p class="font-semibold text-white/90 mb-3">
+                                <span class="text-yellow-400 font-numero">${index + 1}.</span> ${pregunta.texto}
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <label class="radio-custom ${respuestasIguales(respuestaActual, 'Si') ? 'selected' : ''}" 
+                                       data-pregunta="${pregunta.id}" data-respuesta="Si" data-bloque="${bloqueNum}">
+                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="Si" ${respuestasIguales(respuestaActual, 'Si') ? 'checked' : ''}>
+                                    <span>Si</span>
+                                </label>
+                                <label class="radio-custom ${respuestasIguales(respuestaActual, 'No') ? 'selected' : ''}" 
+                                       data-pregunta="${pregunta.id}" data-respuesta="No" data-bloque="${bloqueNum}">
+                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="No" ${respuestasIguales(respuestaActual, 'No') ? 'checked' : ''}>
+                                    <span>No</span>
+                                </label>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                            <button id="btn-guardar-resultados" class="btn-success flex-1 py-3 rounded-xl font-semibold">GUARDAR RESULTADOS</button>
+                            <button id="btn-copiar-whatsapp" class="btn-primary flex-1 py-3 rounded-xl font-semibold">COPIAR PARA WHATSAPP</button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML = html;
+                
+                container.querySelectorAll('.radio-custom').forEach(label => {
+                    label.addEventListener('click', () => {
+                        const preguntaId = label.dataset.pregunta;
+                        const bloque = parseInt(label.dataset.bloque);
+                        container.querySelectorAll(`.radio-custom[data-pregunta="${preguntaId}"][data-bloque="${bloque}"]`).forEach(l => {
+                            l.classList.remove('selected');
+                        });
+                        label.classList.add('selected');
+                        label.querySelector('input').checked = true;
+                    });
+                });
+                
+                document.getElementById('btn-guardar-resultados').addEventListener('click', async () => {
+                    const nuevosResultados = {};
+                    partido.preguntas.forEach(pregunta => {
+                        const selected = container.querySelector(`.radio-custom.selected[data-pregunta="${pregunta.id}"]`);
+                        if (selected) nuevosResultados[pregunta.id] = selected.dataset.respuesta;
+                    });
+                    if (Object.keys(nuevosResultados).length !== 3) {
+                        mostrarToast('Debes seleccionar todas las respuestas', 'danger');
+                        return;
+                    }
+                    try {
+                        await updateDoc(doc(db, 'partidos', `bloque_${bloqueNum}`), {
+                            resultadosOficiales: nuevosResultados,
+                            estado: 'COMPLETADO'
+                        });
+                        await recalcularPuntajes();
+                        mostrarToast('Resultados guardados', 'success');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        mostrarToast('Error al guardar', 'danger');
+                    }
+                });
+                
+                document.getElementById('btn-copiar-whatsapp').addEventListener('click', async () => {
+                    const texto = generarTextoWhatsApp(bloqueNum);
+                    try {
+                        await navigator.clipboard.writeText(texto);
+                        mostrarToast('Copiado! Pegalo en WhatsApp', 'success');
+                    } catch (error) {
+                        mostrarToast('Error al copiar', 'danger');
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        async function recalcularPuntajes() {
+            try {
+                const participantesSnapshot = await getDocs(collection(db, 'participantes'));
+                const partidosSnapshot = await getDocs(collection(db, 'partidos'));
+                const resultadosOficiales = {};
+                partidosSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    resultadosOficiales[`bloque_${data.numero}`] = data.resultadosOficiales;
+                });
+                participantesSnapshot.forEach(async (docSnap) => {
+                    const data = docSnap.data();
+                    if (data.estado !== 'COMPLETADO') return;
+                    const puntajes = {};
+                    let total = 0;
+                    for (let i = 1; i <= 8; i++) {
+                        const bloqueKey = `bloque_${i}`;
+                        const respuestas = data.respuestas[bloqueKey] || {};
+                        const resultados = resultadosOficiales[bloqueKey] || {};
+                        let puntos = 0;
+                        for (const preguntaId in respuestas) {
+                            if (respuestasIguales(respuestas[preguntaId], resultados[preguntaId])) puntos++;
+                        }
+                        puntajes[bloqueKey] = puntos;
+                        total += puntos;
+                    }
+                    puntajes.total = total;
+                    await updateDoc(doc(db, 'participantes', docSnap.id), { puntajes: puntajes });
+                });
+            } catch (error) {
+                console.error('Error recalculando:', error);
+            }
+        }
+        
+        function generarTextoWhatsApp(bloqueNum) {
+            const partido = PARTIDOS[bloqueNum - 1];
+            let texto = `*8VOS DE FINAL - BLOQUE ${bloqueNum}*\n`;
+            texto += `*${partido.local} vs ${partido.visitante}*\n\n`;
+            texto += `Resultados cargados correctamente.\n`;
+            texto += `Revisa el ranking en la app.\n\n`;
+            texto += `_Generado el ${new Date().toLocaleString('es-VE')}_`;
+            return texto;
+        }
+        
+        async function cargarTabEdicion() {
+            const container = document.getElementById('tab-edicion');
+            try {
+                const participantesSnapshot = await getDocs(collection(db, 'participantes'));
+                const participantes = [];
+                participantesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    if (data.estado === 'COMPLETADO') {
+                        participantes.push({ id: doc.id, nombre: data.nombre, respuestas: data.respuestas, puntajes: data.puntajes });
+                    }
+                });
+                let html = `<h3 class="font-titulo text-xl titulo-gradient mb-4">PARTICIPANTES (${participantes.length})</h3><div class="space-y-3">`;
+                participantes.forEach(p => {
+                    html += `
+                        <div class="glass p-4">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="font-nombre text-lg">${p.nombre}</span>
+                                <span class="chip chip-success">${p.puntajes?.total || 0} pts</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="btn-secondary px-3 py-1 rounded-lg text-xs font-semibold" onclick="editarParticipante('${p.id}')">Editar</button>
+                                <button class="btn-danger px-3 py-1 rounded-lg text-xs font-semibold" onclick="eliminarParticipante('${p.id}')">Eliminar</button>
+                                <button class="btn-primary px-3 py-1 rounded-lg text-xs font-semibold" onclick="generarJPGAdmin('${p.id}')">Generar JPG</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                container.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        window.editarParticipante = async (id) => { mostrarToast('Funcion en desarrollo', 'info'); };
+        window.eliminarParticipante = async (id) => {
+            if (confirm('Eliminar este participante?')) {
+                try {
+                    await deleteDoc(doc(db, 'participantes', id));
+                    mostrarToast('Participante eliminado', 'success');
+                    cargarTabEdicion();
+                } catch (error) {
+                    mostrarToast('Error al eliminar', 'danger');
+                }
+            }
+        };
+        window.generarJPGAdmin = async (id) => { mostrarToast('Funcion en desarrollo', 'info'); };
+        
+        async function cargarTabControl() {
+            const container = document.getElementById('tab-control');
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                const config = configDoc.data();
+                const estadoApp = config.estadoApp;
+                let colorSemaforo = 'semaforo-verde';
+                let textoEstado = 'ABIERTO';
+                if (estadoApp === 'CERRADO') { colorSemaforo = 'semaforo-rojo'; textoEstado = 'CERRADO'; }
+                else if (estadoApp === 'FINALIZADO') { colorSemaforo = 'semaforo-amarillo'; textoEstado = 'FINALIZADO'; }
+                
+                container.innerHTML = `
+                    <div class="glass p-6 mb-6">
+                        <h3 class="font-titulo text-xl titulo-gradient mb-4">ESTADO ACTUAL</h3>
+                        <div class="flex items-center gap-3 mb-6">
+                            <span class="semaforo ${colorSemaforo}"></span>
+                            <span class="font-nombre text-2xl">${textoEstado}</span>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button id="btn-cerrar-jugadas" class="btn-danger flex-1 py-3 rounded-xl font-semibold">CERRAR JUGADAS</button>
+                            <button id="btn-abrir-jugadas" class="btn-success flex-1 py-3 rounded-xl font-semibold">ABRIR JUGADAS</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('btn-cerrar-jugadas').addEventListener('click', async () => {
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'CERRADO' });
+                    mostrarToast('Jugadas cerradas', 'success');
+                    cargarTabControl();
+                });
+                document.getElementById('btn-abrir-jugadas').addEventListener('click', async () => {
+                    await updateDoc(doc(db, 'config', 'global'), { estadoApp: 'ABIERTO' });
+                    mostrarToast('Jugadas abiertas', 'success');
+                    cargarTabControl();
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        document.getElementById('btn-participar-stadium').addEventListener('click', () => {
+            const nombre = document.getElementById('input-nombre-stadium').value.trim().toUpperCase();
+            if (nombre) {
+                document.getElementById('input-nombre').value = nombre;
+                mostrarVista('vista-registro');
+                btnParticipar.click();
+            } else {
+                mostrarToast('Por favor ingresa tu nombre', 'danger');
+            }
+        });
+        
+        onSnapshot(doc(db, 'config', 'global'), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                const estadoApp = data.estadoApp;
+                
+                if (document.getElementById('vista-stadium').classList.contains('activa')) {
+                    cargarStadium();
+                }
+                
+                if (document.getElementById('vista-registro').classList.contains('activa')) {
+                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                        document.getElementById('temporizador').textContent = 'CERRADO';
+                        document.getElementById('temporizador').classList.add('text-red-400');
+                        document.getElementById('registro-form-container').classList.add('hidden');
+                        document.getElementById('registro-cerrado-msg').classList.remove('hidden');
+                        document.getElementById('input-nombre').disabled = true;
+                        document.getElementById('btn-participar').disabled = true;
+                    } else {
+                        document.getElementById('registro-form-container').classList.remove('hidden');
+                        document.getElementById('registro-cerrado-msg').classList.add('hidden');
+                        document.getElementById('input-nombre').disabled = false;
+                        document.getElementById('btn-participar').disabled = false;
+                    }
+                }
+            }
+        });
+        
+        // ============================================
+        // REDIRECCIÓN AUTOMÁTICA - PC Y MÓVIL
+        // ============================================
+        window.addEventListener('load', async () => {
+            console.log(' Página cargada. Verificando estado...');
+            
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                if (configDoc.exists()) {
+                    const estadoApp = configDoc.data().estadoApp;
+                    console.log('📊 Estado de la app:', estadoApp);
+                    
+                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                        console.log('🔄 Estado cerrado/finalizado - Redirigiendo al Stadium...');
+                        document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
+                        await cargarStadium();
+                        mostrarVista('vista-stadium');
+                        console.log('✅ Redirección completada');
+                        return;
+                    }
+                } else {
+                    console.log('️ No se encontró configuración');
+                }
+            } catch (error) {
+                console.error('❌ Error verificando estado:', error);
+            }
+            
+            console.log('📱 Verificando usuario guardado...');
+            const usuarioGuardado = localStorage.getItem('usuarioActual');
+            
+            if (usuarioGuardado) {
+                try {
+                    const userData = JSON.parse(usuarioGuardado);
+                    console.log('👤 Usuario encontrado:', userData.nombre);
+                    
+                    const docSnap = await getDoc(doc(db, 'participantes', userData.id));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        console.log(' Estado del usuario:', data.estado);
+                        
+                        if (data.estado === 'EN_PROGRESO') {
+                            console.log('⚠️ Sesión incompleta - Eliminando...');
+                            await deleteDoc(doc(db, 'participantes', userData.id));
+                            localStorage.removeItem('usuarioActual');
+                        } else if (data.estado === 'COMPLETADO') {
+                            console.log('✅ Usuario completado - Mostrando Stadium...');
+                            estado.usuarioActual = userData;
+                            await cargarStadium();
+                            mostrarVista('vista-stadium');
+                        }
+                    } else {
+                        console.log('⚠️ Usuario no existe en BD - Limpiando localStorage');
+                        localStorage.removeItem('usuarioActual');
+                    }
+                } catch (error) {
+                    console.error('❌ Error verificando usuario:', error);
+                    localStorage.removeItem('usuarioActual');
+                }
+            } else {
+                console.log('ℹ️ No hay usuario guardado');
+            }
+        });
+    </script>
+    
+</body>
+</html>
