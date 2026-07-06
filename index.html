@@ -767,6 +767,21 @@
             modoAdmin: false
         };
         
+        // ============================================
+        // NUEVA FUNCIÓN: Comparar respuestas ignorando tildes y mayúsculas
+        // ============================================
+        function respuestasIguales(a, b) {
+            if (!a || !b) return false;
+            const normalizar = s => s.toString().toLowerCase()
+                .replace(/[áà]/g, 'a')
+                .replace(/[éè]/g, 'e')
+                .replace(/[íì]/g, 'i')
+                .replace(/[óò]/g, 'o')
+                .replace(/[úù]/g, 'u')
+                .trim();
+            return normalizar(a) === normalizar(b);
+        }
+        
         function mostrarVista(idVista) {
             document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
             document.getElementById(idVista).classList.add('activa');
@@ -1085,7 +1100,7 @@
                             <div class="flex items-center gap-2 text-sm">
                                 <span class="text-white/60">${i + 1}.</span>
                                 <span class="text-white/80 flex-1">${p.texto}</span>
-                                <span class="chip ${respuestas[p.id] === 'Si' ? 'chip-success' : 'chip-danger'}">
+                                <span class="chip ${respuestasIguales(respuestas[p.id], 'Si') ? 'chip-success' : 'chip-danger'}">
                                     ${respuestas[p.id] || '—'}
                                 </span>
                             </div>
@@ -1115,7 +1130,7 @@
                                     <p class="text-xs text-white/60 mb-2">BLOQUE ${bloqueNum}: ${partido.local} vs ${partido.visitante}</p>
                                     <div class="flex flex-wrap gap-2">
                                         ${partido.preguntas.map((p, i) => `
-                                            <span class="chip ${respuestas[p.id] === 'Si' ? 'chip-success' : 'chip-danger'} text-xs">
+                                            <span class="chip ${respuestasIguales(respuestas[p.id], 'Si') ? 'chip-success' : 'chip-danger'} text-xs">
                                                 P${i + 1}: ${respuestas[p.id]}
                                             </span>
                                         `).join('')}
@@ -1150,7 +1165,7 @@
             mostrarVista('vista-stadium');
         });
         
-        // CARGAR STADIUM - VERSIÓN CORREGIDA
+        // CARGAR STADIUM
         async function cargarStadium() {
             try {
                 const configDoc = await getDoc(doc(db, 'config', 'global'));
@@ -1302,9 +1317,10 @@
                             const respuesta = respuestas[pregunta.id] || '—';
                             let clase = '';
                             let icono = '';
+                            // USANDO LA FUNCIÓN NORMALIZADORA
                             if (hayResultados && respuesta !== '—') {
                                 const correcta = resultados[pregunta.id];
-                                if (respuesta === correcta) {
+                                if (respuestasIguales(respuesta, correcta)) {
                                     clase = 'chip-success';
                                     icono = 'OK';
                                     puntos++;
@@ -1363,14 +1379,12 @@
             }
         });
         
-        // BOTON SALIR ADMIN - AHORA VA AL STADIUM
         document.getElementById('btn-salir-admin').addEventListener('click', () => {
             estado.modoAdmin = false;
             cargarStadium();
             mostrarVista('vista-stadium');
         });
         
-        // BOTONES STADIUM
         document.getElementById('btn-salir-stadium').addEventListener('click', () => {
             estado.usuarioActual = null;
             localStorage.removeItem('usuarioActual');
@@ -1384,7 +1398,6 @@
             mostrarVista('vista-admin-login');
         });
         
-        // PESTAÑAS ADMIN
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1437,14 +1450,14 @@
                                 <span class="text-yellow-400 font-numero">${index + 1}.</span> ${pregunta.texto}
                             </p>
                             <div class="flex flex-wrap gap-3">
-                                <label class="radio-custom ${respuestaActual === 'Si' ? 'selected' : ''}" 
+                                <label class="radio-custom ${respuestasIguales(respuestaActual, 'Si') ? 'selected' : ''}" 
                                        data-pregunta="${pregunta.id}" data-respuesta="Si" data-bloque="${bloqueNum}">
-                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="Si" ${respuestaActual === 'Si' ? 'checked' : ''}>
+                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="Si" ${respuestasIguales(respuestaActual, 'Si') ? 'checked' : ''}>
                                     <span>Si</span>
                                 </label>
-                                <label class="radio-custom ${respuestaActual === 'No' ? 'selected' : ''}" 
+                                <label class="radio-custom ${respuestasIguales(respuestaActual, 'No') ? 'selected' : ''}" 
                                        data-pregunta="${pregunta.id}" data-respuesta="No" data-bloque="${bloqueNum}">
-                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="No" ${respuestaActual === 'No' ? 'checked' : ''}>
+                                    <input type="radio" name="resultado_${bloqueNum}_${pregunta.id}" value="No" ${respuestasIguales(respuestaActual, 'No') ? 'checked' : ''}>
                                     <span>No</span>
                                 </label>
                             </div>
@@ -1510,6 +1523,7 @@
             }
         }
         
+        // FUNCIÓN RECALCULAR CON COMPARACIÓN NORMALIZADA
         async function recalcularPuntajes() {
             try {
                 const participantesSnapshot = await getDocs(collection(db, 'participantes'));
@@ -1530,7 +1544,8 @@
                         const resultados = resultadosOficiales[bloqueKey] || {};
                         let puntos = 0;
                         for (const preguntaId in respuestas) {
-                            if (respuestas[preguntaId] === resultados[preguntaId]) puntos++;
+                            // USANDO LA FUNCIÓN NORMALIZADORA
+                            if (respuestasIguales(respuestas[preguntaId], resultados[preguntaId])) puntos++;
                         }
                         puntajes[bloqueKey] = puntos;
                         total += puntos;
@@ -1652,7 +1667,7 @@
             }
         });
         
-        // LISTENER EN TIEMPO REAL - VERSIÓN CORREGIDA COMPLETA
+        // LISTENER EN TIEMPO REAL
         onSnapshot(doc(db, 'config', 'global'), (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
@@ -1680,11 +1695,29 @@
             }
         });
         
-        // PERSISTENCIA
-        window.addEventListener('load', () => {
+        // PERSISTENCIA Y REDIRECCIÓN AUTOMÁTICA AL STADIUM SI ESTÁ CERRADO
+        window.addEventListener('load', async () => {
+            try {
+                const configDoc = await getDoc(doc(db, 'config', 'global'));
+                if (configDoc.exists()) {
+                    const estadoApp = configDoc.data().estadoApp;
+                    
+                    // Si está CERRADO o FINALIZADO, ir directo al Stadium
+                    if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
+                        await cargarStadium();
+                        mostrarVista('vista-stadium');
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error verificando estado:', error);
+            }
+            
+            // Si está ABIERTO, verificar si hay usuario guardado
             const usuarioGuardado = JSON.parse(localStorage.getItem('usuarioActual'));
             if (usuarioGuardado) {
-                getDoc(doc(db, 'participantes', usuarioGuardado.id)).then(docSnap => {
+                try {
+                    const docSnap = await getDoc(doc(db, 'participantes', usuarioGuardado.id));
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         if (data.estado === 'EN_PROGRESO') {
@@ -1696,7 +1729,9 @@
                             mostrarVista('vista-stadium');
                         }
                     }
-                });
+                } catch (error) {
+                    console.error('Error verificando usuario:', error);
+                }
             }
         });
     </script>
