@@ -112,6 +112,16 @@
         }
         .btn-secondary:hover { background: rgba(255, 255, 255, 0.2); }
         
+        .btn-admin {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #0a1931;
+            transition: all 0.3s ease;
+        }
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.4);
+        }
+        
         .titulo-gradient {
             background: linear-gradient(135deg, #d946ef 0%, #e879f9 50%, #fbbf24 100%);
             -webkit-background-clip: text;
@@ -339,6 +349,18 @@
             color: #ef4444;
             font-weight: 600;
         }
+        
+        /* Indicador de modo admin */
+        .modo-admin-indicador {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #0a1931;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
     </style>
 </head>
 <body class="relative">
@@ -512,16 +534,29 @@
                     SALIR
                 </button>
                 
-                <h2 class="font-titulo text-lg md:text-xl titulo-gradient hidden sm:block">
-                    8VOS DE FINAL
-                </h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="font-titulo text-lg md:text-xl titulo-gradient hidden sm:block">
+                        8VOS DE FINAL
+                    </h2>
+                    <!-- Indicador de modo admin (solo visible para admin) -->
+                    <span id="modo-admin-badge" class="modo-admin-indicador hidden">ADMIN</span>
+                </div>
                 
-                <button 
-                    id="btn-admin-stadium" 
-                    class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
-                >
-                    ADMIN
-                </button>
+                <div class="flex items-center gap-2">
+                    <!-- Botón PANEL (solo visible para admin) -->
+                    <button 
+                        id="btn-ir-panel" 
+                        class="btn-admin px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2 hidden"
+                    >
+                        PANEL
+                    </button>
+                    <button 
+                        id="btn-admin-stadium" 
+                        class="btn-secondary px-4 py-2 rounded-lg font-semibold text-sm flex items-center gap-2"
+                    >
+                        ADMIN
+                    </button>
+                </div>
             </div>
             
             <div id="stadium-input-container" class="glass-strong p-6 mb-6">
@@ -609,16 +644,28 @@
         <!-- VISTA 7: PANEL ADMIN -->
         <div id="vista-admin-panel" class="vista max-w-6xl mx-auto mt-8">
             <div class="glass-strong p-6 mb-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="font-titulo text-2xl titulo-gradient">
-                        PANEL ADMINISTRADOR
-                    </h2>
-                    <button 
-                        id="btn-salir-admin" 
-                        class="btn-secondary px-4 py-2 rounded-lg text-sm font-semibold"
-                    >
-                        Salir
-                    </button>
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <div class="flex items-center gap-3">
+                        <h2 class="font-titulo text-2xl titulo-gradient">
+                            PANEL ADMINISTRADOR
+                        </h2>
+                        <span class="modo-admin-indicador">ADMIN</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <!-- NUEVO BOTÓN: IR AL STADIUM SIN PERDER ADMIN -->
+                        <button 
+                            id="btn-ir-stadium" 
+                            class="btn-admin px-4 py-2 rounded-lg text-sm font-semibold"
+                        >
+                            STADIUM
+                        </button>
+                        <button 
+                            id="btn-salir-admin" 
+                            class="btn-secondary px-4 py-2 rounded-lg text-sm font-semibold"
+                        >
+                            Salir
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="flex flex-wrap gap-2 mb-6">
@@ -768,7 +815,7 @@
         };
         
         // ============================================
-        // FUNCIÓN MEJORADA: Comparar respuestas ignorando tildes y mayúsculas
+        // FUNCIÓN: Comparar respuestas ignorando tildes y mayúsculas
         // ============================================
         function respuestasIguales(a, b) {
             if ((a === null || a === undefined) && (b === null || b === undefined)) return true;
@@ -778,11 +825,8 @@
                 return s.toString()
                     .toLowerCase()
                     .trim()
-                    .replace(/[áàâä]/g, 'a')
-                    .replace(/[éèêë]/g, 'e')
-                    .replace(/[íìîï]/g, 'i')
-                    .replace(/[óòôö]/g, 'o')
-                    .replace(/[úùûü]/g, 'u')
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
                     .replace(/\s+/g, '');
             };
             
@@ -828,6 +872,27 @@
                     oscillator.stop(context.currentTime + 0.5);
                 }
             } catch(e) { console.log('Audio no soportado'); }
+        }
+        
+        // ============================================
+        // ACTUALIZAR VISIBILIDAD DE ELEMENTOS ADMIN
+        // ============================================
+        function actualizarVisibilidadAdmin() {
+            const btnIrPanel = document.getElementById('btn-ir-panel');
+            const modoAdminBadge = document.getElementById('modo-admin-badge');
+            const btnAdminStadium = document.getElementById('btn-admin-stadium');
+            
+            if (estado.modoAdmin) {
+                // Mostrar elementos de admin
+                if (btnIrPanel) btnIrPanel.classList.remove('hidden');
+                if (modoAdminBadge) modoAdminBadge.classList.remove('hidden');
+                if (btnAdminStadium) btnAdminStadium.classList.add('hidden');
+            } else {
+                // Ocultar elementos de admin
+                if (btnIrPanel) btnIrPanel.classList.add('hidden');
+                if (modoAdminBadge) modoAdminBadge.classList.add('hidden');
+                if (btnAdminStadium) btnAdminStadium.classList.remove('hidden');
+            }
         }
         
         let yaCerroAutomaticamente = false;
@@ -1186,6 +1251,9 @@
                     if (cerradoMsg) cerradoMsg.classList.add('hidden');
                 }
                 
+                // Actualizar visibilidad de elementos admin
+                actualizarVisibilidadAdmin();
+                
                 await cargarRanking();
                 await cargarJugadasPorBloque();
                 
@@ -1250,7 +1318,6 @@
         
         async function cargarJugadasPorBloque() {
             try {
-                console.log('📊 Cargando jugadas por bloque...');
                 const bloquesContainer = document.getElementById('bloques-jugadas');
                 if (!bloquesContainer) return;
                 bloquesContainer.innerHTML = '';
@@ -1269,8 +1336,6 @@
                     }
                 });
                 
-                console.log(`👥 Participantes cargados: ${participantes.length}`);
-                
                 const partidosSnapshot = await getDocs(collection(db, 'partidos'));
                 const resultadosOficiales = {};
                 partidosSnapshot.forEach(doc => {
@@ -1278,16 +1343,11 @@
                     resultadosOficiales[`bloque_${data.numero}`] = data.resultadosOficiales;
                 });
                 
-                console.log('📋 Resultados oficiales:', resultadosOficiales);
-                
                 PARTIDOS.forEach((partido, index) => {
                     const bloqueNum = index + 1;
                     const bloqueKey = `bloque_${bloqueNum}`;
                     const resultados = resultadosOficiales[bloqueKey] || {};
                     const hayResultados = Object.values(resultados).some(r => r !== null && r !== undefined);
-                    
-                    console.log(`\n🔍 BLOQUE ${bloqueNum}:`, partido.local, 'vs', partido.visitante);
-                    console.log('Resultados oficiales:', resultados);
                     
                     const bloqueDiv = document.createElement('div');
                     bloqueDiv.className = 'glass p-4';
@@ -1334,8 +1394,6 @@
                                 const correcta = resultados[pregunta.id];
                                 const esCorrecta = respuestasIguales(respuesta, correcta);
                                 
-                                console.log(`  ${p.nombre} - ${pregunta.id}: "${respuesta}" vs "${correcta}" = ${esCorrecta ? '✓' : '✗'}`);
-                                
                                 if (esCorrecta) {
                                     clase = 'chip-success';
                                     icono = 'OK';
@@ -1364,14 +1422,13 @@
                     bloquesContainer.appendChild(bloqueDiv);
                 });
                 
-                console.log('✅ Jugadas cargadas correctamente\n');
-                
             } catch (error) {
-                console.error('❌ Error cargando jugadas:', error);
+                console.error('Error cargando jugadas:', error);
                 mostrarToast('Error al cargar jugadas', 'danger');
             }
         }
         
+        // ADMIN LOGIN
         document.getElementById('btn-admin-link').addEventListener('click', () => {
             mostrarVista('vista-admin-login');
         });
@@ -1399,14 +1456,38 @@
             }
         });
         
+        // ============================================
+        // BOTÓN SALIR ADMIN - PIERDE FACULTADES
+        // ============================================
         document.getElementById('btn-salir-admin').addEventListener('click', () => {
             estado.modoAdmin = false;
             cargarStadium();
             mostrarVista('vista-stadium');
         });
         
+        // ============================================
+        // NUEVO BOTÓN: IR AL STADIUM SIN PERDER ADMIN
+        // ============================================
+        document.getElementById('btn-ir-stadium').addEventListener('click', () => {
+            // NO cambiar estado.modoAdmin - se mantiene como admin
+            cargarStadium();
+            mostrarVista('vista-stadium');
+        });
+        
+        // ============================================
+        // NUEVO BOTÓN: VOLVER AL PANEL DESDE STADIUM
+        // ============================================
+        document.getElementById('btn-ir-panel').addEventListener('click', () => {
+            // Solo funciona si es admin
+            if (estado.modoAdmin) {
+                cargarPanelAdmin();
+                mostrarVista('vista-admin-panel');
+            }
+        });
+        
         document.getElementById('btn-salir-stadium').addEventListener('click', () => {
             estado.usuarioActual = null;
+            estado.modoAdmin = false;
             localStorage.removeItem('usuarioActual');
             document.getElementById('input-nombre').value = '';
             document.getElementById('input-nombre-stadium').value = '';
@@ -1716,62 +1797,48 @@
         // REDIRECCIÓN AUTOMÁTICA - PC Y MÓVIL
         // ============================================
         window.addEventListener('load', async () => {
-            console.log(' Página cargada. Verificando estado...');
+            console.log('Pagina cargada. Verificando estado...');
             
             try {
                 const configDoc = await getDoc(doc(db, 'config', 'global'));
                 if (configDoc.exists()) {
                     const estadoApp = configDoc.data().estadoApp;
-                    console.log('📊 Estado de la app:', estadoApp);
+                    console.log('Estado de la app:', estadoApp);
                     
                     if (estadoApp === 'CERRADO' || estadoApp === 'FINALIZADO') {
-                        console.log('🔄 Estado cerrado/finalizado - Redirigiendo al Stadium...');
+                        console.log('Estado cerrado/finalizado - Redirigiendo al Stadium...');
                         document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
                         await cargarStadium();
                         mostrarVista('vista-stadium');
-                        console.log('✅ Redirección completada');
+                        console.log('Redireccion completada');
                         return;
                     }
-                } else {
-                    console.log('️ No se encontró configuración');
                 }
             } catch (error) {
-                console.error('❌ Error verificando estado:', error);
+                console.error('Error verificando estado:', error);
             }
             
-            console.log('📱 Verificando usuario guardado...');
             const usuarioGuardado = localStorage.getItem('usuarioActual');
             
             if (usuarioGuardado) {
                 try {
                     const userData = JSON.parse(usuarioGuardado);
-                    console.log('👤 Usuario encontrado:', userData.nombre);
-                    
                     const docSnap = await getDoc(doc(db, 'participantes', userData.id));
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        console.log(' Estado del usuario:', data.estado);
-                        
                         if (data.estado === 'EN_PROGRESO') {
-                            console.log('⚠️ Sesión incompleta - Eliminando...');
                             await deleteDoc(doc(db, 'participantes', userData.id));
                             localStorage.removeItem('usuarioActual');
                         } else if (data.estado === 'COMPLETADO') {
-                            console.log('✅ Usuario completado - Mostrando Stadium...');
                             estado.usuarioActual = userData;
                             await cargarStadium();
                             mostrarVista('vista-stadium');
                         }
-                    } else {
-                        console.log('⚠️ Usuario no existe en BD - Limpiando localStorage');
-                        localStorage.removeItem('usuarioActual');
                     }
                 } catch (error) {
-                    console.error('❌ Error verificando usuario:', error);
+                    console.error('Error verificando usuario:', error);
                     localStorage.removeItem('usuarioActual');
                 }
-            } else {
-                console.log('ℹ️ No hay usuario guardado');
             }
         });
     </script>
